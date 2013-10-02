@@ -1,0 +1,75 @@
+@navbarHeight: 40px;
+
+@import "bootstrap";
+body {
+    padding-top: @navbarHeight;
+}
+
+@defaultWidth      : 1000px;
+
+@normText          : #333333;
+@blueHover         : blue;
+
+@avatarColumnWidth : 230px;
+@avatarImageHeight : 220px;
+
+@feedBorder        : #DDD;
+@boxLightBackground: #F1F1F1;
+
+@inactiveIcon    : #8C8C8C;
+
+@spring             : #2EA33D;
+@summer             : #FFFB87;
+@fall               : #FF8F17;
+@winter             : #007FFF;
+
+/* optimizeLegibility breaks some unicode characters on Chrome */
+h1, h2, h3, h4, h5, h6 {
+  text-rendering: auto;
+}
+
+.blackBlueLink {
+  a {
+    &:link, &:visited {
+      color: @normText;
+      text-decoration: none;
+    }
+    &:hover {
+      color: @blueHover;
+      text-decoration: underline;
+    }
+  }
+}
+.glyphicon-inactive {
+  color: @inactiveIcon;
+}
+
+
+.hidden {
+  display: none;
+}
+.center-horizontal {
+  text-align: center;
+}
+.tab-content {
+  overflow: hidden;
+}
+
+.container {
+  width: @defaultWidth;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* goddammit css */
+.navbar-inverse {
+  min-height: 40px;
+  margin-bottom: 0 !important;
+  > .container {
+    a.navbar-brand, .nav > li > a {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      color: white;
+    }
+  }
+}
