@@ -23,6 +23,14 @@ class User extends AppModel {
         'required' => True,
         'allowEmpty' => False,
         'message' => "A valid IP address is required"
+      ],
+      'role' => [
+        'valid' => [
+          'rule' => ['inList', ['admin', 'user']],
+          'message' => 'Please enter a valid role',
+          'required' => True,
+          'allowEmpty' => False
+        ]
       ]
     ],
   ];

@@ -67,5 +67,19 @@ class Image extends AppModel {
       'className' => 'User'
     ]
   ];
+
+  public function __construct($id = False, $table = Null, $ds = Null) {
+    parent::__construct($id, $table, $ds);
+    $this->virtualFields['eti_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/n/", %s.hash, "/image.", %s.type)', $this->alias, $this->alias, $this->alias);
+    $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/image.", %s.type)', $this->alias, $this->alias, $this->alias);
+    $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/image.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias);
+  }
+
+  function incrementHits($id) {
+    $this->updateAll(
+      [$this->alias.'.hits' => $this->alias.'.hits+1'],
+      [$this->alias.'.id' => $id]
+    );
+  }  
 }
 ?>

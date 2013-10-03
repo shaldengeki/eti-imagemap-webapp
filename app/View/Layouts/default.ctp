@@ -40,9 +40,10 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
-		echo $this->Html->css('bootstrap.min');
-
+		
 		echo $this->Html->script('jquery.min');
+		echo $this->Html->script('ZeroClipboard.min');
+		echo $this->Html->script('site');
 		echo $this->fetch('script');
 	?>
 </head>

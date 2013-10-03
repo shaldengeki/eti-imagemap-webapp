@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `role` VARCHAR(5) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;

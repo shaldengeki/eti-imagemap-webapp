@@ -10,25 +10,21 @@ body {
 @normText          : #333333;
 @blueHover         : blue;
 
-@avatarColumnWidth : 230px;
-@avatarImageHeight : 220px;
-
-@feedBorder        : #DDD;
-@boxLightBackground: #F1F1F1;
+@imageThumbMaxHeight : 150px;
+@imageThumbMaxWidth : 150px;
 
 @inactiveIcon    : #8C8C8C;
-
-@spring             : #2EA33D;
-@summer             : #FFFB87;
-@fall               : #FF8F17;
-@winter             : #007FFF;
 
 /* optimizeLegibility breaks some unicode characters on Chrome */
 h1, h2, h3, h4, h5, h6 {
   text-rendering: auto;
 }
 
-.blackBlueLink {
+.monospaced-text {
+  font-family: Monaco, "Liberation Mono", Courier, monospace;
+}
+
+.black-blue-link {
   a {
     &:link, &:visited {
       color: @normText;
@@ -61,6 +57,20 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
 }
 
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+
 /* goddammit css */
 .navbar-inverse {
   min-height: 40px;
@@ -71,5 +81,40 @@ h1, h2, h3, h4, h5, h6 {
       padding-bottom: 10px;
       color: white;
     }
+  }
+}
+
+ul.image-grid {
+  .clearfix;
+  margin: 0;
+  padding: 1px;
+  list-style: none;
+  line-height: normal;
+  min-height: 152px;
+  min-width: 152px;
+  li {
+    float: left;
+    max-width: @imageThumbMaxWidth;
+    max-height: @imageThumbMaxHeight;
+    position: relative;
+    margin: 1px;
+    background-color: white;
+    text-align: center;
+    img {
+      max-width: @imageThumbMaxWidth;
+      max-height: @imageThumbMaxHeight;
+    }
+  }
+}
+
+.eti-copy-fields {
+  .copy-field {
+    .monospaced-text;
+    color: #999;
+    background-color: #fff;
+    cursor: text;
+  }
+  .copy-button {
+
   }
 }

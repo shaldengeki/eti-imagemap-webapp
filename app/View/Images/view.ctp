@@ -1,7 +1,4 @@
 <!-- File: /app/View/Images/view.ctp -->
-<?php
-  $imageURL = "http://i".$image['Image']['server'].".endoftheinter.net/i/n/".$image['Image']['hash']."/image.".$image['Image']['type'];
-?>
 <h1><?php echo h($image['Image']['hash']); ?></h1>
 <hr />
 <ul>
@@ -11,11 +8,27 @@
                                                 'action' => 'view',
                                                 $image['User']['id']
   ]); ?></li>
+  <li>Hits: <?php echo $image['Image']['hits']; ?></li>
+  <li>
+    <span class='input-group eti-copy-fields'>
+      <?php echo $this->Form->input('copy_url', [
+                                                  'id' => 'eti-copy-field',
+                                                  'class' => 'copy-field form-control',
+                                                  'type' => 'text',
+                                                  'value' => $image['Image']['eti_image_tag'],
+                                                  'data-clipboard-target' => $image['Image']['eti_image_tag'],
+                                                  'readonly' => 'readonly',
+                                                  'div' => False,
+                                                  'label' => False
+                                                ]); ?>
+      <span class='copy-button input-group-addon' data-clipboard-target='eti-copy-field'>Copy</span>
+    </span>
+  </li>
 </ul>
 
 <?php echo $this->Html->link(
-                             $this->Html->image($imageURL),
-                             $imageURL,
+                             $this->Html->image($image['Image']['eti_url']),
+                             $image['Image']['eti_url'],
                              [
                               'target' => '_blank',
                               'escape' => False

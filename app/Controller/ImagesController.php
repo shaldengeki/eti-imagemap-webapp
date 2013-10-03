@@ -4,7 +4,11 @@ class ImagesController extends AppController {
   public $components = ['Session'];
 
   public function index() {
-    $this->set('images', $this->Image->find('all'));
+    $this->set('images', array_map(function ($i) {
+      return $i['Image'];
+    }, 
+    $this->Image->find('all')
+    ));
   }
 
   public function view($id = Null) {
@@ -16,6 +20,10 @@ class ImagesController extends AppController {
     if (!$image) {
       throw new NotFoundException(__('Invalid image'));
     }
+
+    $this->Image->incrementHits($id);
+    $image['Image']['hits'] += 1;
+
     $this->set('image', $image);
   }
 
