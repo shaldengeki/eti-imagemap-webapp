@@ -113,3 +113,8 @@ CakeLog::config('error', array(
 
 // Cake debug tools
 CakePlugin::load('DebugKit');
+
+// Curl request object
+App::uses('Curl', 'Curl');
+App::uses('ParallelCurl', 'ParallelCurl');
+App::uses('Connection', 'ETI');

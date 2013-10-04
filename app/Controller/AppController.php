@@ -36,6 +36,29 @@ class AppController extends Controller {
     'Js' => ['Jquery']
   ];
   public $components = [
-    'DebugKit.Toolbar'
+    'DebugKit.Toolbar',
+    'Session',
+    'Auth' => [
+      'authenticate' => ['ETI'],
+      'loginRedirect' => ['controller' => 'images', 'action' => 'index'],
+      'logoutRedirect' => ['controller' => 'images', 'action' => 'index'],
+      'authorize' => ['Controller']
+    ]
   ];
+  public function beforeFilter() {
+    // by default, everyone can view index and view.
+    $this->Auth->allow('index', 'view');
+    if ($this->Auth->user('id') > 0) {
+      $this->set("authUser", $this->Auth->user());
+    }
+  }
+  public function isAuthorized($user) {
+    // Admin can access every action
+    if (isset($user['role']) && $user['role'] === 'admin') {
+      return True;
+    }
+
+    // Default deny
+    return False;
+  }  
 }

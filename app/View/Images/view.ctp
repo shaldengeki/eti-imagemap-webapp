@@ -21,7 +21,7 @@
                                                   'div' => False,
                                                   'label' => False
                                                 ]); ?>
-      <span class='copy-button input-group-addon' data-clipboard-target='eti-copy-field'>Copy</span>
+      <span class='copy-button input-group-addon glyphicon glyphicon-paperclip' data-clipboard-target='eti-copy-field'></span>
     </span>
   </li>
 </ul>

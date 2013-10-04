@@ -3,12 +3,47 @@ class ImagesController extends AppController {
   public $helpers = ['Html', 'Form'];
   public $components = ['Session'];
 
+  public function beforeFilter() {
+    parent::beforeFilter();
+    $this->Auth->deny('view');
+  }
+
+  public function isAuthorized($user) {
+    // All registered users can add images.
+    if ($this->action === "add" && isset($user['id']) && $user['id'] > 0) {
+      return True;
+    }
+
+    // A user can edit and delete his own images.
+    if (in_array($this->action, ['edit', 'delete'])) {
+      $imageID = $this->request->params['pass'][0];
+      if ($this->Image->isOwnedBy($imageID, $user['id'])) {
+        return True;
+      }
+    }
+
+    // Anyone can view public images, but only the owning user can view private images.
+    $this->Auth->deny('view');
+    if ($this->action === 'view') {
+      $imageID = $this->request->params['pass'][0];
+      if ($this->Image->canView($imageID, $user['id'])) {
+        return True;
+      }
+    }
+
+    return parent::isAuthorized($user);
+  }  
+
+
   public function index() {
-    $this->set('images', array_map(function ($i) {
-      return $i['Image'];
-    }, 
-    $this->Image->find('all')
-    ));
+    // only list images that the user can view.
+    $this->set('images', array_filter(array_map(function ($i) {
+          return $i['Image'];
+        }, 
+        $this->Image->find('all')
+      ), function($i) {
+      return $this->Image->canView($i['id'], $this->Auth->user('id'));
+    }));
   }
 
   public function view($id = Null) {

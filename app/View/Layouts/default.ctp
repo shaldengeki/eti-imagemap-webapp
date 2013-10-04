@@ -40,9 +40,10 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
-		
+
 		echo $this->Html->script('jquery.min');
 		echo $this->Html->script('ZeroClipboard.min');
+		echo $this->Html->script('bootstrap.min');
 		echo $this->Html->script('site');
 		echo $this->fetch('script');
 	?>
@@ -67,12 +68,49 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 	        <li><a href="/">Images</a></li>
 	        <li><a href="/users">Users</a></li>
 	      </ul>
+        <ul class='nav navbar-nav navbar-right'>
+<?php
+	if (isset($authUser)) {
+?>
+	        <li id='navbar-user' class='dropdown'>
+	          <a href='#' class='dropdown-toggle' data-toggle='dropdown'><i class='glyphicon glyphicon-user glyphicon-white'></i><?php echo h($authUser['name']); ?><b class='caret'></b></a>
+	          <ul class='dropdown-menu'>
+	            <li><?php echo $this->Html->link('Profile', 
+	                   [
+	                     'controller' => 'users',
+	                     'action' => 'view',
+	                     $authUser['id']
+	                  ]); ?></li>
+	            <li><?php echo $this->Html->link('Settings', 
+	                   [
+	                     'controller' => 'users',
+	                     'action' => 'edit',
+	                     $authUser['id']
+	                  ]); ?></li>
+	            <li><?php echo $this->Html->link('Log Out', 
+	                   [
+	                     'controller' => 'users',
+	                     'action' => 'logout'
+	                  ]); ?></li>
+	          </ul>
+	         </li>
+<?php
+	} else {
+?>
+          <li>
+            <?php echo $this->element('login_inline'); ?>
+          </li>
+<?php
+  }
+?>
+        </ul>
 	    </div>
 	  </div>
 	</div>
 	<div class="container">
 		<div id="content">
 			<?php echo $this->Session->flash(); ?>
+			<?php echo $this->Session->flash('auth'); ?>
 
 			<?php echo $this->fetch('content'); ?>
 		</div>

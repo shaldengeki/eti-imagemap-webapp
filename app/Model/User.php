@@ -20,19 +20,18 @@ class User extends AppModel {
     'last_ip' => [
       'ip' => [
         'rule' => ['ip', 'IPv4'],
-        'required' => True,
-        'allowEmpty' => False,
+        'allowEmpty' => True,
         'message' => "A valid IP address is required"
-      ],
-      'role' => [
-        'valid' => [
-          'rule' => ['inList', ['admin', 'user']],
-          'message' => 'Please enter a valid role',
-          'required' => True,
-          'allowEmpty' => False
-        ]
       ]
     ],
+    'role' => [
+      'valid' => [
+        'rule' => ['inList', ['admin', 'user']],
+        'message' => 'Please enter a valid role',
+        'required' => True,
+        'allowEmpty' => False
+      ]
+    ]
   ];
   public $hasMany = [
     'Images' => [
@@ -43,5 +42,9 @@ class User extends AppModel {
       'conditions' => ['PublicImages.private' => False]
     ]
   ];
+
+  public function canViewPrivateImages($user_1, $user_2) {
+
+  }
 }
 ?>

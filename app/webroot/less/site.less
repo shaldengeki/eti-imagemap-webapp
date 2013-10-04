@@ -104,17 +104,52 @@ ul.image-grid {
       max-width: @imageThumbMaxWidth;
       max-height: @imageThumbMaxHeight;
     }
+    .copy-button {
+      position: absolute;
+      float: right;
+      display: none;
+      padding: 5px;
+    }
+    .zeroclipboard-is-hover, .zeroclipboard-is-active {
+      display: inline !important;
+      right: 0;
+    }
+  }
+
+  li:hover {
+    .copy-button {
+      display: inline !important;
+      right: 0;
+    }
   }
 }
 
+.copy-button {
+  top: 0px;
+  background-image: -moz-linear-gradient(#fafafa, #eaeaea);
+  background-image: -webkit-linear-gradient(#fafafa, #eaeaea);
+  background-image: linear-gradient(#fafafa, #eaeaea);
+  background-repeat: repeat-x;
+}
+.zeroclipboard-is-hover {
+  background-color: #dadada;
+  background-image: -moz-linear-gradient(#eaeaea, #dadada);
+  background-image: -webkit-linear-gradient(#eaeaea, #dadada);
+  background-image: linear-gradient(#eaeaea, #dadada);
+}
+.zeroclipboard-is-active {
+  text-decoration:none;
+  background-color:#dadada;
+  background-repeat:repeat-x;
+  background-image:none;
+  border-color:#b5b5b5;
+  box-shadow:inset 0 3px 5px rgba(0,0,0,0.15);
+}
 .eti-copy-fields {
   .copy-field {
     .monospaced-text;
     color: #999;
     background-color: #fff;
     cursor: text;
-  }
-  .copy-button {
-
   }
 }

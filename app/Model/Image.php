@@ -25,6 +25,14 @@ class Image extends AppModel {
         'message' => "Must be exactly 32 characters long"
       ]
     ],
+    'filename' => [
+      'between' => [
+        'rule' => ['between', 1, 255],
+        'required' => True,
+        'allowEmpty' => False,
+        'message' => "Must be between 1 and 255 characters long"
+      ]      
+    ],
     'type' => [
       'alphaNumeric' => [
         'rule' => 'alphaNumeric',
@@ -70,16 +78,33 @@ class Image extends AppModel {
 
   public function __construct($id = False, $table = Null, $ds = Null) {
     parent::__construct($id, $table, $ds);
-    $this->virtualFields['eti_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/n/", %s.hash, "/image.", %s.type)', $this->alias, $this->alias, $this->alias);
-    $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/image.", %s.type)', $this->alias, $this->alias, $this->alias);
-    $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/image.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias);
+    $this->virtualFields['eti_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/n/", %s.hash, "/", %s.filename, ".", %s.type)', $this->alias, $this->alias, $this->alias, $this->alias);
+    $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/", %s.filename, ".", %s.type)', $this->alias, $this->alias, $this->alias, $this->alias);
+    $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/\', %s.filename, \'\.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias, $this->alias);
   }
 
-  function incrementHits($id) {
+  public function incrementHits($id) {
     $this->updateAll(
       [$this->alias.'.hits' => $this->alias.'.hits+1'],
       [$this->alias.'.id' => $id]
     );
-  }  
+  }
+
+  public function isOwnedBy($image, $user) {
+    return (bool) ($this->field('id', ['id' => $image, 'user_id' => $user]) === $image);
+  }
+
+  public function isPrivate($image) {
+    return (bool) $this->field('private', ['id' => $image]);
+  }
+
+  public function isPublic($image) {
+    return (bool) !$this->isPrivate($image);
+  }
+
+  public function canView($image, $user) {
+    // returns a boolean reflecting whether or not a given $user ID can view an $image.
+    return (bool) ($this->isPublic($image) || $this->isOwnedBy($image, $user));
+  }
 }
 ?>

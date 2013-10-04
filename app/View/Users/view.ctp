@@ -7,4 +7,4 @@
 </ul>
 
 <h2>Uploads:</h2>
-<?php echo $this->element('image_grid', ["images" => $user['PublicImages']]); ?>
+<?php echo $this->element('image_grid', ["images" => $images]); ?>

@@ -19,6 +19,7 @@
                                   'escape' => False
                                  ]
                                  ); ?>
+    <span class='copy-button glyphicon glyphicon-paperclip' data-clipboard-text='<?php echo h($image['eti_image_tag']); ?>'></span>
   </li>
 <?php
   }
