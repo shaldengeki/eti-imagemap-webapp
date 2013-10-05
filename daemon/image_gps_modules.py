@@ -117,6 +117,6 @@ class Modules(update_daemon.UpdateModules):
         self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
 
       # unset password to indicate request is done.
-      self.dbs['scrape_requests'].set(password=None, progress=100).where(user_id=request['user_id']).update()
+      self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()
 
       self.daemon.log.info("Inserted " + str(len(images_to_add)) + " images for userID " + str(request['user_id']) + ".")
