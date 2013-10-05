@@ -4,13 +4,13 @@
   image_gps_modules - Provides functions for image_gps_daemon.
   Author - Shal Dengeki <shaldengeki@gmail.com>
 '''
-from update_daemon import update_modules
+import update_daemon
 import albatross
 import pyparallelcurl
 import urllib
 import re
 
-class Modules(update_modules.UpdateModules):
+class Modules(update_daemon.UpdateModules):
   '''
   Provides modules for llAnimuBot.
   '''
