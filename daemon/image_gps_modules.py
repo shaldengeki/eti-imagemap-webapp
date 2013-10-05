@@ -27,6 +27,11 @@ class Modules(update_daemon.UpdateModules):
   def process_imagemap_page(self, text, url, curlHandle, paramArray):
     images = paramArray['images']
     hashes = paramArray['hashes']
+    user_id = paramArray['user_id']
+    page_num = paramArray['page_num']
+    base_datetime = paramArray['base_datetime']
+
+    page_datetime = base_datetime - datetime.timedelta(seconds=page_num)
 
     # split out the image tags on this imagemap page.
     imap_page = bs4.BeautifulSoup(text)
@@ -57,12 +62,8 @@ class Modules(update_daemon.UpdateModules):
       else:
         image_ext = ext_match.group('extension')
 
-      images.append({
-                    'server': image_server,
-                    'hash': image_hash,
-                    'filename': image_filename,
-                    'type': image_ext
-                    })
+
+      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, 0])
 
   def scrape_imagemaps(self):
     '''
@@ -77,6 +78,8 @@ class Modules(update_daemon.UpdateModules):
     for request in scrape_requests:
       # process scrape request.
       self.daemon.log.info("Processing usermap ID " + str(request['user_id']) + ".")
+      self.dbs['imagemap'].table('scrape_requests').set(progress=1).where(user_id=request['user_id']).update()
+
       eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
       if not eti.loggedIn():
         # incorrect password, or ETI is down.
@@ -96,10 +99,13 @@ class Modules(update_daemon.UpdateModules):
       last_page_num = int(albatross.getEnclosedString(last_page_link.attrs['href'], 'page=', ''))
 
       # process the first imagemap page that we've already gotten.
+      base_datetime = datetime.datetime.now(tz=pytz.utc)
       images_to_add = []
       parallelcurl_params = {
         'images': images_to_add,
-        'hashes': user_hashes
+        'hashes': user_hashes,
+        'user_id': request['user_id'],
+        'base_datetime': base_datetime,
       }
       self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
 
@@ -107,13 +113,12 @@ class Modules(update_daemon.UpdateModules):
       num_pages = last_page_num - 1
       for page_num in range(2, last_page_num+1):
         map_page_params = urllib.urlencode([('page', str(page_num))])
+        parallelcurl_params['page_num'] = page_num
         eti.parallelCurl.startrequest('https://images.endoftheinter.net/imagemap.php?' + map_page_params, self.process_imagemap_page, parallelcurl_params)
       eti.parallelCurl.finishallrequests()
 
       # add images to the database.
       if images_to_add:
-        now_date = datetime.datetime.now(tz=pytz.utc)
-        images_to_add = [[image['server'], image['hash'], image['filename'], image['type'], request['user_id'], now_date.strftime('%Y-%m-%d %H:%M:%S'), 0, 0] for image in images_to_add]
         self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
 
       # unset password to indicate request is done.
