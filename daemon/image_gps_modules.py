@@ -20,9 +20,9 @@ class Modules(update_daemon.UpdateModules):
   '''
   def __init__(self, daemon):
     super(Modules, self).__init__(daemon)
-    self.update_functions.extend([
-                                 self.scrape_imagemaps
-                                 ])
+    self.update_functions = [
+                              self.scrape_imagemaps
+                            ]
 
   def process_imagemap_page(self, text, url, curlHandle, paramArray):
     images = paramArray['images']
