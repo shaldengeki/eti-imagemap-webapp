@@ -76,9 +76,11 @@ class Modules(update_daemon.UpdateModules):
     scrape_requests = self.dbs['imagemap'].table('scrape_requests').fields('scrape_requests.user_id', 'scrape_requests.date', 'scrape_requests.password', 'users.name').join('users ON users.id=scrape_requests.user_id').where('password IS NOT NULL').order('date ASC').list()
     for request in scrape_requests:
       # process scrape request.
+      self.daemon.log.info("Processing usermap ID " + str(request['user_id']) + ".")
       eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
       if not eti.loggedIn():
         # incorrect password, or ETI is down.
+        self.daemon.log.info("Incorrect password or ETI down for usermap ID " + str(request['user_id']) + ". Skipping.")
         self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()
         continue
 
@@ -102,6 +104,7 @@ class Modules(update_daemon.UpdateModules):
       self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
 
       # now loop over all the other pages (if there are any).
+      num_pages = last_page_num - 1
       for page_num in range(2, last_page_num+1):
         map_page_params = urllib.urlencode([('page', str(page_num))])
         eti.parallelCurl.startrequest('https://images.endoftheinter.net/imagemap.php?' + map_page_params, self.process_imagemap_page, parallelcurl_params)
@@ -111,5 +114,8 @@ class Modules(update_daemon.UpdateModules):
       now_date = datetime.datetime.now(tz=pytz.utc)
       images_to_add = [[image['server'], image['hash'], image['filename'], image['type'], request['user_id'], now_date.strftime('%Y-%m-%d %H:%M:%S'), 0, 0] for image in images_to_add]
       self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
+
+      # unset password to indicate request is done.
+      self.dbs['scrape_requests'].set(password=None, progress=100).where(user_id=request['user_id']).update()
 
       self.daemon.log.info("Inserted " + str(len(images_to_add)) + " images for userID " + str(request['user_id']) + ".")
