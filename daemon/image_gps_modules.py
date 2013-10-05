@@ -111,9 +111,10 @@ class Modules(update_daemon.UpdateModules):
       eti.parallelCurl.finishallrequests()
 
       # add images to the database.
-      now_date = datetime.datetime.now(tz=pytz.utc)
-      images_to_add = [[image['server'], image['hash'], image['filename'], image['type'], request['user_id'], now_date.strftime('%Y-%m-%d %H:%M:%S'), 0, 0] for image in images_to_add]
-      self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
+      if images_to_add:
+        now_date = datetime.datetime.now(tz=pytz.utc)
+        images_to_add = [[image['server'], image['hash'], image['filename'], image['type'], request['user_id'], now_date.strftime('%Y-%m-%d %H:%M:%S'), 0, 0] for image in images_to_add]
+        self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
 
       # unset password to indicate request is done.
       self.dbs['scrape_requests'].set(password=None, progress=100).where(user_id=request['user_id']).update()
