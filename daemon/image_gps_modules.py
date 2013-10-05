@@ -106,6 +106,7 @@ class Modules(update_daemon.UpdateModules):
         'hashes': user_hashes,
         'user_id': request['user_id'],
         'base_datetime': base_datetime,
+        'page_num': 1
       }
       self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
 

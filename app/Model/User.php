@@ -48,9 +48,5 @@ class User extends AppModel {
       'conditions' => ['ScrapeRequest.password IS NOT NULL']
     ]
   ];
-
-  public function canViewPrivateImages($user_1, $user_2) {
-
-  }
 }
 ?>
