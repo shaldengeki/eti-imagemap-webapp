@@ -26,7 +26,7 @@ import yapdi
 
 class image_gps(update_daemon.UpdateDaemon):
   def preload(self):
-    lastRunTime = self.dbs(['imagemap']).table('scrape_requests').fields('date').where('password IS NOT NULL').order('date ASC').limit(1).firstValue()
+    lastRunTime = self.dbs['imagemap'].table('scrape_requests').fields('date').where('password IS NOT NULL').order('date ASC').limit(1).firstValue()
     if lastRunTime is not None:
       self.info['last_run_time'] = lastRunTime
     else:
