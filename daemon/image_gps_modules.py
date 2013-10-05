@@ -79,10 +79,7 @@ class Modules(update_modules.UpdateModules):
         continue
 
       # get this user's currently-uploaded image hashes.
-      user_hashes = self.dbs['imagemap'].table('images')
-                                        .fields('hash')
-                                        .where(user_id=request['user_id'])
-                                        .list()
+      user_hashes = self.dbs['imagemap'].table('images').fields('hash').where(user_id=request['user_id']).list()
       user_hashes = {image_hash:1 for image_hash in user_hashes}
 
       # fetch imagemap's first page to get number of pages.
