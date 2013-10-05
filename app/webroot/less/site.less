@@ -5,7 +5,8 @@ body {
     padding-top: @navbarHeight;
 }
 
-@defaultWidth      : 1000px;
+@defaultWidth      : 100%;
+@defaultMaxWidth   : 100%;
 
 @normText          : #333333;
 @blueHover         : blue;
@@ -46,6 +47,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 .center-horizontal {
   text-align: center;
+  margin-left: 0;
+  margin-right: 0;
 }
 .tab-content {
   overflow: hidden;
@@ -53,6 +56,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .container {
   width: @defaultWidth;
+  max-width: @defaultMaxWidth;
   margin: 0 auto;
   position: relative;
 }
@@ -92,12 +96,15 @@ ul.image-grid {
   line-height: normal;
   min-height: 152px;
   min-width: 152px;
+  margin: 0 auto;
   li {
     float: left;
     max-width: @imageThumbMaxWidth;
     max-height: @imageThumbMaxHeight;
     position: relative;
     margin: 1px;
+    height: 150px;
+    width: 150px;
     background-color: white;
     text-align: center;
     img {

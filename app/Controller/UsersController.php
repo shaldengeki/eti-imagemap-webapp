@@ -1,12 +1,23 @@
 <?php
 class UsersController extends AppController {
   public $helpers = ['Html', 'Form'];
-  public $components = ['Session'];
+  public $components = ['Session', 'Paginator'];
+  public $uses = ['User', 'Image'];
 
-  public function beforeFilter() {
-    parent::beforeFilter();
-    $this->Auth->allow('add');
-  }
+  public $paginate = [
+    'User' => [
+      'limit' => 50,
+      'order' => [
+        'User.name' => 'asc'
+      ]
+    ],
+    'Image' => [
+      'limit' => 50,
+      'order' => [
+        'Image.added_on' => 'desc'
+      ]
+    ]
+  ];
 
   public function isAuthorized($user) {
     // All registered users can logout and queue imagemap scrapings.
@@ -44,11 +55,26 @@ class UsersController extends AppController {
       throw new NotFoundException(__('Invalid user'));
     }
     $this->set('user', $user);
-    if ($user['User']['id'] === $this->Auth->user('id') || $this->Auth->user('role') === 'admin') {
-      $this->set('images', $user['Images']);
+
+    $this->paginate['Image']['conditions'] = [
+      'Image.user_id' => $user['User']['id'],
+    ];
+    // if the signed-in user is neither the given user nor an admin, filter out all private images.
+    if ($user['User']['id'] !== $this->Auth->user('id') && $this->Auth->user('role') !== 'admin') {
+      $images = $this->Paginator->paginate('Image', [
+                  'Image.user_id' => $user['User']['id'],
+                  'Image.private' => False
+                 ]);
     } else {
-      $this->set('images', $user['PublicImages']);
+      $images = $this->Paginator->paginate('Image', [
+                                    'Image.user_id' => $user['User']['id'],
+                                    ]);
     }
+
+    // only return images, not joined things.
+    $this->set('images', array_map(function ($i) {
+      return $i['Image'];
+    }, $images));
   }
 
   public function add() {

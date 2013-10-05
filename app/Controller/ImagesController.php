@@ -1,12 +1,14 @@
 <?php
 class ImagesController extends AppController {
   public $helpers = ['Html', 'Form'];
-  public $components = ['Session'];
+  public $components = ['Session', 'Paginator'];
 
-  public function beforeFilter() {
-    parent::beforeFilter();
-    $this->Auth->deny('view');
-  }
+  public $paginate = [
+    'limit' => 50,
+    'order' => [
+      'Image.added_on' => 'desc'
+    ]
+  ];
 
   public function isAuthorized($user) {
     // All registered users can add images.
@@ -23,10 +25,11 @@ class ImagesController extends AppController {
     }
 
     // Anyone can view public images, but only the owning user can view private images.
-    $this->Auth->deny('view');
+    // TODO: find a way of making this code execute, since $this->Auth->allow('view')
+    // is called in AppController and $this->Auth->deny('view') seems to just deny without calling isAuthorized()
     if ($this->action === 'view') {
       $imageID = $this->request->params['pass'][0];
-      if ($this->Image->canView($imageID, $user['id'])) {
+      if (!$this->Image->canView($imageID, $user['id'])) {
         return True;
       }
     }
@@ -37,10 +40,11 @@ class ImagesController extends AppController {
 
   public function index() {
     // only list images that the user can view.
+    $this->Paginator->settings = $this->paginate;
     $this->set('images', array_filter(array_map(function ($i) {
           return $i['Image'];
         }, 
-        $this->Image->find('all')
+        $this->Paginator->paginate('Image')
       ), function($i) {
       return $this->Image->canView($i['id'], $this->Auth->user('id'));
     }));
@@ -53,6 +57,11 @@ class ImagesController extends AppController {
 
     $image = $this->Image->findById($id);
     if (!$image) {
+      throw new NotFoundException(__('Invalid image'));
+    }
+
+    // hacky way of denying access. TODO: fix auth on images so this is no longer necessary.
+    if (!$this->Image->canView($id, $this->Auth->user('id'))) {
       throw new NotFoundException(__('Invalid image'));
     }
 

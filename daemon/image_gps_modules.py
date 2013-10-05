@@ -68,7 +68,7 @@ class Modules(update_daemon.UpdateModules):
     '''
     Processes the imagemap scraping queue.
     '''
-    if (datetime.datetime.now(tz=pytz.utc) - self.info['last_run_time']) < datetime.timedelta(seconds=5):
+    if (datetime.datetime.now(tz=pytz.utc) - self.info['last_run_time']) < datetime.timedelta(seconds=1):
       return
     self.info['last_run_time'] = datetime.datetime.now(tz=pytz.utc)
     self.daemon.log.info("Processing imagemap queue.")
