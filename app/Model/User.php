@@ -42,6 +42,12 @@ class User extends AppModel {
       'conditions' => ['PublicImages.private' => False]
     ]
   ];
+  public $hasOne = [
+    'ScrapeRequest' => [
+      'className' => 'ScrapeRequest',
+      'conditions' => ['ScrapeRequest.password IS NOT NULL']
+    ]
+  ];
 
   public function canViewPrivateImages($user_1, $user_2) {
 

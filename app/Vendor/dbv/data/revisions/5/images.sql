@@ -1,0 +1,1 @@
+ALTER TABLE `images` CHANGE `type` `type` VARCHAR(4) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;

@@ -116,5 +116,9 @@ CakePlugin::load('DebugKit');
 
 // Curl request object
 App::uses('Curl', 'Curl');
+
+// Parallelized Curl request object
 App::uses('ParallelCurl', 'ParallelCurl');
-App::uses('Connection', 'ETI');
+
+// ETI connection manager
+App::uses('EtiConnection', 'Eti');

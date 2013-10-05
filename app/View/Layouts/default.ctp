@@ -65,8 +65,14 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 	    </div>
 	    <div class="collapse navbar-collapse">
 	      <ul class="nav navbar-nav">
-	        <li><a href="/">Images</a></li>
-	        <li><a href="/users">Users</a></li>
+	        <li><?php echo $this->Html->link('Images', [
+	                                         'controller' => 'images',
+	                                         'action' => 'index'
+	        ]); ?></li>
+	        <li><?php echo $this->Html->link('Users', [
+	                                         'controller' => 'users',
+	                                         'action' => 'index'
+	        ]); ?></li>
 	      </ul>
         <ul class='nav navbar-nav navbar-right'>
 <?php

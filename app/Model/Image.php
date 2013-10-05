@@ -41,8 +41,8 @@ class Image extends AppModel {
         'message' => "Only alphanumeric characters allowed"
       ],
       'between' => [
-        'rule' => ['between', 1, 3],
-        'message' => "Must be between 1 and 3 characters long"
+        'rule' => ['between', 1, 4],
+        'message' => "Must be between 1 and 4 characters long"
       ]
     ],
     'user_id' => [
@@ -79,7 +79,7 @@ class Image extends AppModel {
   public function __construct($id = False, $table = Null, $ds = Null) {
     parent::__construct($id, $table, $ds);
     $this->virtualFields['eti_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/n/", %s.hash, "/", %s.filename, ".", %s.type)', $this->alias, $this->alias, $this->alias, $this->alias);
-    $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/", %s.filename, ".", %s.type)', $this->alias, $this->alias, $this->alias, $this->alias);
+    $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/", %s.filename, ".jpg")', $this->alias, $this->alias, $this->alias);
     $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/\', %s.filename, \'\.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias, $this->alias);
   }
 
