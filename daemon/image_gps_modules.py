@@ -4,7 +4,7 @@
   image_gps_modules - Provides functions for image_gps_daemon.
   Author - Shal Dengeki <shaldengeki@gmail.com>
 '''
-import update_modules
+from update_daemon import update_modules
 import albatross
 import pyparallelcurl
 import urllib
