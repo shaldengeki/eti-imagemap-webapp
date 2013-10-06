@@ -62,7 +62,6 @@ class Modules(update_daemon.UpdateModules):
       else:
         image_ext = ext_match.group('extension')
 
-
       images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, 1])
 
   def scrape_imagemaps(self):
@@ -74,7 +73,7 @@ class Modules(update_daemon.UpdateModules):
     self.info['last_run_time'] = datetime.datetime.now(tz=pytz.utc)
     self.daemon.log.info("Processing imagemap queue.")
 
-    scrape_requests = self.dbs['imagemap'].table('scrape_requests').fields('scrape_requests.user_id', 'scrape_requests.date', 'scrape_requests.password', 'users.name').join('users ON users.id=scrape_requests.user_id').where('password IS NOT NULL').order('date ASC').list()
+    scrape_requests = self.dbs['imagemap'].table('scrape_requests').fields('scrape_requests.user_id', 'scrape_requests.date', 'scrape_requests.password', 'users.name').join('users ON users.id=scrape_requests.user_id').where(progress=0, 'password IS NOT NULL').order('date ASC').list()
     for request in scrape_requests:
       # process scrape request.
       self.daemon.log.info("Processing usermap ID " + str(request['user_id']) + ".")
@@ -83,8 +82,9 @@ class Modules(update_daemon.UpdateModules):
       eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
       if not eti.loggedIn():
         # incorrect password, or ETI is down.
+        # TODO: add reason into update scrape_requests
         self.daemon.log.info("Incorrect password or ETI down for usermap ID " + str(request['user_id']) + ". Skipping.")
-        self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()
+        self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=-1).where(user_id=request['user_id']).update()
         continue
 
       # get this user's currently-uploaded image hashes.

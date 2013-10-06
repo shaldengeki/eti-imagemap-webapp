@@ -61,7 +61,7 @@ class AppController extends Controller {
                                                   ]
                                                 ]);
 
-      if ($scrapeRequest && $scrapeRequest['ScrapeRequest']['password'] !== Null) {
+      if ($scrapeRequest && $scrapeRequest['ScrapeRequest']['progress'] !== 100) {
         $this->set("authScrapeRequest", $scrapeRequest);
       }
     } else {

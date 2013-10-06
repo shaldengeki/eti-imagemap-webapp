@@ -1,5 +1,11 @@
 <?php
 class ScrapeRequest extends AppModel {
+
+  // Error codes that progress is set to in case of imagemap scrape failure.
+  public static $ERRORS = [
+    -1 => "Invalid password"
+  ];
+
   public $primaryKey = 'user_id';
   public $validate = [
     'user_id' => [
@@ -19,10 +25,10 @@ class ScrapeRequest extends AppModel {
       ]
     ],
     'progress' => [
-      'number' => [
-        'rule' => ['range', -1, 101],
+      'numeric' => [
+        'rule' => 'numeric'
         'allowEmpty' => False,
-        'message' => "Please enter a number between 0 and 100"
+        'message' => "Please enter a number"
       ]
     ],
     'password' => [
