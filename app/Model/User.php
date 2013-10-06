@@ -42,7 +42,8 @@ class User extends AppModel {
   ];
   public $hasMany = [
     'Images' => [
-      'className' => 'Image'
+      'className' => 'Image',
+      'dependent' => True
     ],
     'PublicImages' => [
       'className' => 'Image',
@@ -55,5 +56,11 @@ class User extends AppModel {
       'conditions' => ['ScrapeRequest.password IS NOT NULL']
     ]
   ];
+
+  public function canViewPrivateImages($user_1, $user_2) {
+    // returns a bool reflecting whether or not $user_1 can view the private images of $user_2.
+    $authingUserRole = $this->field('role', ['id' => $user_1]);
+    return (bool) ($user_1 !== $user_2 && $authingUserRole !== 'admin');
+  }
 }
 ?>

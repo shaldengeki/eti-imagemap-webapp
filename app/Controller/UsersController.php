@@ -15,12 +15,16 @@ class UsersController extends AppController {
       'limit' => 50,
       'order' => [
         'Image.added_on' => 'desc'
-      ]
+      ],
+      'recursive' => -1
     ]
   ];
 
   public function beforeFilter() {
     parent::beforeFilter();
+
+    // all users can view a user's image listing.
+    $this->Auth->allow('images');
 
     // unregistered users can register and login.
     if (!isset($user['id'])) {
@@ -64,7 +68,7 @@ class UsersController extends AppController {
       'Image.user_id' => $user['User']['id'],
     ];
     // if the signed-in user is neither the given user nor an admin, filter out all private images.
-    if ($user['User']['id'] !== $this->Auth->user('id') && $this->Auth->user('role') !== 'admin') {
+    if ($this->User->canViewPrivateImages($this->Auth->user('id'), $user['User']['id'])) {
       $images = $this->Paginator->paginate('Image', [
                   'Image.user_id' => $user['User']['id'],
                   'Image.private' => False
@@ -202,6 +206,38 @@ class UsersController extends AppController {
       }
       $this->Session->setFlash(__("Could not queue your imagemap for scraping. Please try again!"));
     }
+  }
+
+  public function images($id = Null) {
+    if (!$id) {
+      throw new NotFoundException(__('Invalid user'));
+    }
+
+    $user = $this->User->findById($id);
+    if (!$user) {
+      throw new NotFoundException(__('Invalid user'));
+    }
+    $this->set('user', $user);
+
+    $this->paginate['Image']['fields'] = [
+      'Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'
+    ];
+    $this->Paginator->settings = $this->paginate;
+    // if the signed-in user is neither the given user nor an admin, filter out all private images.
+    if ($this->User->canViewPrivateImages($this->Auth->user('id'), $user['User']['id'])) {
+      $images = $this->Paginator->paginate('Image', [
+                  'Image.user_id' => $user['User']['id'],
+                  'Image.private' => False
+                 ]);
+    } else {
+      $images = $this->Paginator->paginate('Image', [
+                                    'Image.user_id' => $user['User']['id'],
+                                    ]);
+    }
+    // only return images, not joined things.
+    $this->set('images', array_map(function ($i) {
+      return $i['Image'];
+    }, $images));
   }
 }
 ?>

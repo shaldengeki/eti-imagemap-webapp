@@ -11,5 +11,9 @@
   <li>Images: <?php echo $user['User']['image_count']; ?></li>
 </ul>
 
-<h2>Latest Uploads:</h2>
+<h2><?php echo $this->Html->link('Latest Uploads', [
+                                  'controller' => 'users',
+                                  'action' => 'images',
+                                  $user['User']['id']
+                                 ]); ?></h2>
 <?php echo $this->element('image_grid', ["images" => $images]); ?>
