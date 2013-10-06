@@ -50,7 +50,10 @@ class UsersController extends AppController {
   }  
 
   public function index() {
-    $this->set('users', $this->User->find('all'));
+    $this->set('users', $this->User->find('all', [
+                'fields' => ['User.id', 'User.name', 'User.image_count'],
+                'recursive' => -1
+               ]));
   }
 
   public function view($id = Null) {
@@ -219,9 +222,7 @@ class UsersController extends AppController {
     }
     $this->set('user', $user);
 
-    $this->paginate['Image']['fields'] = [
-      'Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'
-    ];
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'];
     $this->Paginator->settings = $this->paginate;
     // if the signed-in user is neither the given user nor an admin, filter out all private images.
     if ($this->User->canViewPrivateImages($this->Auth->user('id'), $user['User']['id'])) {

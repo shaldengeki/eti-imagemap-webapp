@@ -4,9 +4,11 @@ class ImagesController extends AppController {
   public $components = ['Session', 'Paginator'];
 
   public $paginate = [
-    'limit' => 50,
-    'order' => [
-      'Image.added_on' => 'desc'
+    'Image' => [
+      'limit' => 50,
+      'order' => [
+        'Image.added_on' => 'desc'
+      ]
     ]
   ];
 
@@ -42,6 +44,7 @@ class ImagesController extends AppController {
 
   public function index() {
     // only list images that the user can view.
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'];
     $this->Paginator->settings = $this->paginate;
     $this->set('images', array_filter(array_map(function ($i) {
           return $i['Image'];
