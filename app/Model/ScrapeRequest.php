@@ -37,5 +37,8 @@ class ScrapeRequest extends AppModel {
       'className' => 'User'
     ]
   ];
+  public $virtualFields = [
+    'position' => 'SELECT COUNT(*) FROM scrape_requests AS SR2 WHERE SR2.password IS NOT NULL AND SR2.date <= ScrapeRequest.date'
+  ];
 }
 ?>

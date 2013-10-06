@@ -31,6 +31,13 @@ class User extends AppModel {
         'required' => True,
         'allowEmpty' => False
       ]
+    ],
+    'image_count' => [
+      'naturalNumber' => [
+        'rule' => ['naturalNumber', True],
+        'allowEmpty' => True,
+        'message' => "Must be a natural number or zero"
+      ]
     ]
   ];
   public $hasMany = [

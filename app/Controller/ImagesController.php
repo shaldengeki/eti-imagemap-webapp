@@ -10,9 +10,21 @@ class ImagesController extends AppController {
     ]
   ];
 
+  public function beforeFilter() {
+    parent::beforeFilter();
+
+    // Anyone can view public images, but only the owning user can view private images.
+    if ($this->action === 'view') {
+      $imageID = $this->request->params['pass'][0];
+      if ($this->Image->isPublic($imageID)) {
+        $this->Auth->allow('view');
+      }
+    }
+  }
+
   public function isAuthorized($user) {
     // All registered users can add images.
-    if ($this->action === "add" && isset($user['id']) && $user['id'] > 0) {
+    if ($this->action === "add") {
       return True;
     }
 
@@ -20,16 +32,6 @@ class ImagesController extends AppController {
     if (in_array($this->action, ['edit', 'delete'])) {
       $imageID = $this->request->params['pass'][0];
       if ($this->Image->isOwnedBy($imageID, $user['id'])) {
-        return True;
-      }
-    }
-
-    // Anyone can view public images, but only the owning user can view private images.
-    // TODO: find a way of making this code execute, since $this->Auth->allow('view')
-    // is called in AppController and $this->Auth->deny('view') seems to just deny without calling isAuthorized()
-    if ($this->action === 'view') {
-      $imageID = $this->request->params['pass'][0];
-      if (!$this->Image->canView($imageID, $user['id'])) {
         return True;
       }
     }
@@ -57,11 +59,6 @@ class ImagesController extends AppController {
 
     $image = $this->Image->findById($id);
     if (!$image) {
-      throw new NotFoundException(__('Invalid image'));
-    }
-
-    // hacky way of denying access. TODO: fix auth on images so this is no longer necessary.
-    if (!$this->Image->canView($id, $this->Auth->user('id'))) {
       throw new NotFoundException(__('Invalid image'));
     }
 

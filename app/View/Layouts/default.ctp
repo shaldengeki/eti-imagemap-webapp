@@ -118,6 +118,8 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 			<?php echo $this->Session->flash(); ?>
 			<?php echo $this->Session->flash('auth'); ?>
 
+			<?php echo $this->element('scrape_request_queue_banner'); ?>
+
 			<?php echo $this->fetch('content'); ?>
 		</div>
 		<hr />

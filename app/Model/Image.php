@@ -72,7 +72,8 @@ class Image extends AppModel {
   ];
   public $belongsTo = [
     'User' => [
-      'className' => 'User'
+      'className' => 'User',
+      'counterCache' => True
     ]
   ];
 

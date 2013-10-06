@@ -48,8 +48,35 @@ class AppController extends Controller {
   public function beforeFilter() {
     // by default, everyone can view index and view.
     $this->Auth->allow('index', 'view');
+
+    // set authUser to current-user object if user is logged in.
     if ($this->Auth->user('id') > 0) {
       $this->set("authUser", $this->Auth->user());
+
+      // set authScrapeRequest to current-user-scrape request object if user is logged in AND has a pending imagemap scrape request.
+      $this->loadModel('ScrapeRequest');
+      $scrapeRequest = $this->ScrapeRequest->find('first', [
+                                                  'conditions' => [
+                                                    'user_id' => $this->Auth->user('id')
+                                                  ]
+                                                ]);
+
+      if ($scrapeRequest && $scrapeRequest['ScrapeRequest']['password'] !== Null) {
+        $this->set("authScrapeRequest", $scrapeRequest);
+      }
+    } else {
+      // if user is not logged in, see if we can log them in via their IP.
+      $this->loadModel('User');
+      $findUser = $this->User->find('all', [
+                                    'conditions' => [
+                                      'last_ip' => $_SERVER['REMOTE_ADDR']
+                                    ]
+                                    ]);
+      if ($findUser and count($findUser) === 1) {
+        // log this user in and refresh the page to load the proper credentials.
+        $this->Auth->login($findUser[0]['User']);
+        $this->redirect($this->request->here);
+      }
     }
   }
   public function isAuthorized($user) {

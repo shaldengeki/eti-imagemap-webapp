@@ -19,14 +19,18 @@ class UsersController extends AppController {
     ]
   ];
 
+  public function beforeFilter() {
+    parent::beforeFilter();
+
+    // unregistered users can register and login.
+    if (!isset($user['id'])) {
+      $this->Auth->allow('add', 'login');
+    }
+  }
+
   public function isAuthorized($user) {
     // All registered users can logout and queue imagemap scrapings.
-    if (in_array($this->action, ['logout', 'scrape_image_map']) && isset($user['id']) && $user['id'] > 0) {
-      return True;
-    }
-
-    // All unregistered users can register and login.
-    if (in_array($this->action, ['add', 'login']) && !isset($user['id'])) {
+    if (in_array($this->action, ['logout', 'scrape_image_map'])) {
       return True;
     }
 
@@ -81,13 +85,14 @@ class UsersController extends AppController {
     if ($this->request->is('post')) {
       $this->User->create();
       // set parameters.
+      $this->request->data['User']['role'] = 'user';
       $this->request->data['User']['last_ip'] = $_SERVER['REMOTE_ADDR'];
 
       if ($this->User->save($this->request->data)) {
-        $this->Session->setFlash(__('Your user info has been saved.'));
+        $this->Session->setFlash(__("You've been registered and logged in!"));
         return $this->redirect(['action' => 'index']);
       }
-      $this->Session->setFlash(__('Unable to add your user.'));
+      $this->Session->setFlash(__('Unable to register you.'));
     }
   }
 
@@ -103,11 +108,17 @@ class UsersController extends AppController {
 
     if ($this->request->is('post') || $this->request->is('put')) {
       $this->User->id = $id;
-      if ($this->User->save($this->request->data)) {
-        $this->Session->setFlash(__('Your user has been updated.'));
+
+      // ensure that this user is not elevating a userlevel beyond what he is allowed to.
+      if ($this->Auth->user('role') !== 'admin' && $this->request->data['User']['role'] !== $user['User']['role']) {
+        $this->Session->setFlash(__("You can't elevate / decrement this user's userlevel to this point."));
+      } elseif ($this->User->save($this->request->data)) {
+        $this->Session->setFlash(__('Your account settings have been updated.'));
         return $this->redirect(['action' => 'index']);
+      } else {
+        // an error occurred while saving the user's data. validation errors should show up in the form so just flash.
+        $this->Session->setFlash(__('Unable to update your account settings.'));
       }
-      $this->Session->setFlash(__('Unable to update your user.'));
     }
 
     if (!$this->request->data) {

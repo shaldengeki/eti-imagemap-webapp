@@ -19,5 +19,10 @@
                                  'div' => False,
                                  'label' => False
                                  ]); ?>
+  <?php echo $this->Html->link("Sign Up", [
+                                'controller' => 'users',
+                                'action' => 'add',
+                               ], [
+                                'class' => 'btn btn-success'
+                               ]); ?>
 <?php echo $this->Form->end(); ?>
-</div>

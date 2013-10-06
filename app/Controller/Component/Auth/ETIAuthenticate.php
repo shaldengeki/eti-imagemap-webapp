@@ -27,25 +27,24 @@ class ETIAuthenticate extends BaseAuthenticate {
 
     // ensure that the given username exists.
     $findUser = $this->_findUser($username);
-    if (!$findUser) {
+    if ($findUser) {
+      // if the current IP is the user's last ip address, log them in.
+      if ($findUser['last_ip'] === $_SERVER['REMOTE_ADDR']) {
+        return $findUser;
+      }
+    } else {
       return False;
-    }
-
-    // if the current IP is the user's last ip address, log them in.
-    if ($findUser['last_ip'] === $_SERVER['REMOTE_ADDR']) {
-      return $findUser;
     }
 
     // ensure that the given username is logged onto ETI with the current IP.
     // if ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1') {
       $etiRequest = new Curl('https://boards.endoftheinter.net/scripts/login.php?username='.urlencode($username).'&ip='.$_SERVER['REMOTE_ADDR']);
-    // } else {
-    //   return $findUser;
+      $checkETI = $etiRequest->ssl(False)->get();
+      if ($checkETI !== "1:".$username) {
+        return False;
+      }
     // }
-    $checkETI = $etiRequest->ssl(False)->get();
-    if ($checkETI !== "1:".$username) {
-      return False;
-    }
+
     return $findUser;
   }
 }
