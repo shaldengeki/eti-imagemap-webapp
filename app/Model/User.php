@@ -12,7 +12,6 @@ class User extends AppModel {
     'name' => [
       'between' => [
         'rule' => ['between', 1, 64],
-        'required' => True,
         'allowEmpty' => False,
         'message' => "Must be between 1 and 64 characters long"
       ]

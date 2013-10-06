@@ -121,4 +121,4 @@ App::uses('Curl', 'Curl');
 App::uses('ParallelCurl', 'ParallelCurl');
 
 // ETI connection manager
-App::uses('EtiConnection', 'Eti');
+App::uses('ETIConnection', 'ETI');

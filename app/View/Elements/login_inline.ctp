@@ -4,10 +4,10 @@
                                'action' => 'login'
 ]); ?>
   <div class="form-group">
-    <label class="sr-only" for="username">Username</label>
-    <?php echo $this->Form->input('username', [
+    <label class="sr-only" for="name">Username</label>
+    <?php echo $this->Form->input('name', [
                                   'class' => 'form-control',
-                                  'id' => 'username',
+                                  'id' => 'name',
                                   'placeholder' => 'ETI Username',
                                   'div' => False,
                                   'label' => False

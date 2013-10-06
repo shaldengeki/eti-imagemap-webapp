@@ -14,7 +14,7 @@ class UsersController extends AppController {
     'Image' => [
       'limit' => 50,
       'order' => [
-        'Image.added_on' => 'desc'
+        'Image.created' => 'desc'
       ],
       'recursive' => -1
     ]
@@ -90,16 +90,28 @@ class UsersController extends AppController {
 
   public function add() {
     if ($this->request->is('post')) {
-      $this->User->create();
-      // set parameters.
-      $this->request->data['User']['role'] = 'user';
-      $this->request->data['User']['last_ip'] = $_SERVER['REMOTE_ADDR'];
+      if ($this->Auth->login()) {
+        // if the user doesn't already exist, they'll have an ID set to null.
+        if ($this->Auth->user('id') === Null) {
+          // create this user.
+          $this->User->create();
+          // set parameters.
+          $this->request->data['User']['role'] = 'user';
+          $this->request->data['User']['last_ip'] = $_SERVER['REMOTE_ADDR'];
 
-      if ($this->User->save($this->request->data)) {
-        $this->Session->setFlash(__("You've been registered and logged in!"));
-        return $this->redirect(['action' => 'index']);
+          if ($this->User->save($this->request->data)) {
+            $this->Session->setFlash(__("You've been registered and logged in!"));
+            return $this->redirect($this->Auth->redirectUrl());
+          }
+        } else {
+          // otherwise, the user already exists. log them in.
+          $this->Session->setFlash(__("You've already registered; we've logged you in."));
+          return $this->redirect($this->Auth->redirectUrl());
+        }
+      } else {
+        // IP and ETI authentication failed.
+        $this->Session->setFlash(__('Unable to register you.'));
       }
-      $this->Session->setFlash(__('Unable to register you.'));
     }
   }
 
@@ -115,6 +127,11 @@ class UsersController extends AppController {
 
     if ($this->request->is('post') || $this->request->is('put')) {
       $this->User->id = $id;
+
+      // disallow users from changing their usernames.
+      if (isset($this->request->data['User']['name'])) {
+        unset($this->request->data['User']['name']);
+      }
 
       // ensure that this user is not elevating a userlevel beyond what he is allowed to.
       if ($this->Auth->user('role') !== 'admin' && $this->request->data['User']['role'] !== $user['User']['role']) {

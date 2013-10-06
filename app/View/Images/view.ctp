@@ -2,7 +2,7 @@
 <h1><?php echo h($image['Image']['hash']); ?></h1>
 <hr />
 <ul>
-  <li>Added on: <?php echo $image['Image']['added_on']; ?></li>
+  <li>Added on: <?php echo $image['Image']['created']; ?></li>
   <li>Uploaded by: <?php echo $this->Html->link($image['User']['name'], [
                                                 'controller' => 'users',
                                                 'action' => 'view',

@@ -53,14 +53,6 @@ class Image extends AppModel {
         'message' => "Only natural numbers allowed"
       ]
     ],
-    'added_on' => [
-      'datetime' => [
-        'rule' => 'datetime',
-        'required' => True,
-        'allowEmpty' => False,
-        'message' => "Only valid datetimes allowed"
-      ]
-    ],
     'private' => [
       'boolean' => [
         'rule' => 'boolean',

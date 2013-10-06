@@ -7,7 +7,7 @@ class ImagesController extends AppController {
     'Image' => [
       'limit' => 50,
       'order' => [
-        'Image.added_on' => 'desc'
+        'Image.created' => 'desc'
       ]
     ]
   ];
@@ -74,6 +74,11 @@ class ImagesController extends AppController {
   public function add() {
     if ($this->request->is('post')) {
       $this->Image->create();
+
+      // set default parameters.
+      $this->request->data['Image']['user_id'] = $this->Auth->user('id');
+      $this->request->data['Image']['hits'] = 0;
+
       if ($this->Image->save($this->request->data)) {
         $this->Session->setFlash(__('Your image has been saved.'));
         return $this->redirect(['action' => 'index']);

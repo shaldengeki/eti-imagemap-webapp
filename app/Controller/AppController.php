@@ -39,7 +39,7 @@ class AppController extends Controller {
     'DebugKit.Toolbar',
     'Session',
     'Auth' => [
-      'authenticate' => ['ETI'],
+      'authenticate' => ['IP', 'ETI'],
       'loginRedirect' => ['controller' => 'images', 'action' => 'index'],
       'logoutRedirect' => ['controller' => 'images', 'action' => 'index'],
       'authorize' => ['Controller']
