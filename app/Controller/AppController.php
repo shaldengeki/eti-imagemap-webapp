@@ -63,6 +63,7 @@ class AppController extends Controller {
 
       if ($scrapeRequest && $scrapeRequest['ScrapeRequest']['progress'] !== 100) {
         $this->set("authScrapeRequest", $scrapeRequest);
+        $this->set("scrapeRequestErrors", ScrapeRequest::$ERRORS);
       }
     } else {
       // if user is not logged in, see if we can log them in via their IP.

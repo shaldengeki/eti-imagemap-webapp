@@ -1,7 +1,7 @@
 <?php
   if (isset($authScrapeRequest)) {
     $processing = ($authScrapeRequest['ScrapeRequest']['position'] === 1 || $authScrapeRequest['ScrapeRequest']['progress'] !== 0) ? True : False;
-    $error = $authScrapeRequest['ScrapeRequest']['progress'] < 0 ? ScrapeRequest::$ERRORS[$authScrapeRequest['ScrapeRequest']['progress']] : Null;
+    $error = $authScrapeRequest['ScrapeRequest']['progress'] < 0 ? $scrapeRequestErrors[$authScrapeRequest['ScrapeRequest']['progress']] : Null;
     $alertType = $error ? "danger" : ($processing ? "success" : "info");
 ?>
 <div class="alert alert-<?php echo $alertType; ?> alert-dismissable">

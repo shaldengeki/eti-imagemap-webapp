@@ -26,7 +26,7 @@ class ScrapeRequest extends AppModel {
     ],
     'progress' => [
       'numeric' => [
-        'rule' => 'numeric'
+        'rule' => 'numeric',
         'allowEmpty' => False,
         'message' => "Please enter a number"
       ]
