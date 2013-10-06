@@ -73,7 +73,7 @@ class Modules(update_daemon.UpdateModules):
     self.info['last_run_time'] = datetime.datetime.now(tz=pytz.utc)
     self.daemon.log.info("Processing imagemap queue.")
 
-    scrape_requests = self.dbs['imagemap'].table('scrape_requests').fields('scrape_requests.user_id', 'scrape_requests.date', 'scrape_requests.password', 'users.name').join('users ON users.id=scrape_requests.user_id').where(progress=0, 'password IS NOT NULL').order('date ASC').list()
+    scrape_requests = self.dbs['imagemap'].table('scrape_requests').fields('scrape_requests.user_id', 'scrape_requests.date', 'scrape_requests.password', 'users.name').join('users ON users.id=scrape_requests.user_id').where('password IS NOT NULL', progress=0).order('date ASC').list()
     for request in scrape_requests:
       # process scrape request.
       self.daemon.log.info("Processing usermap ID " + str(request['user_id']) + ".")
