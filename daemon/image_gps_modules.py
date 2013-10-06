@@ -63,7 +63,7 @@ class Modules(update_daemon.UpdateModules):
         image_ext = ext_match.group('extension')
 
 
-      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, 0])
+      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, 1])
 
   def scrape_imagemaps(self):
     '''
@@ -121,6 +121,7 @@ class Modules(update_daemon.UpdateModules):
       # add images to the database.
       if images_to_add:
         self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
+        # self.dbs['imagemap'].table('users').set(image_count=)
 
       # unset password to indicate request is done.
       self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()

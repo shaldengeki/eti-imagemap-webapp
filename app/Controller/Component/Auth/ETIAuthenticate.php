@@ -38,7 +38,11 @@ class ETIAuthenticate extends BaseAuthenticate {
 
     // ensure that the given username is logged onto ETI with the current IP.
     // if ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1') {
-      $etiRequest = new Curl('https://boards.endoftheinter.net/scripts/login.php?username='.urlencode($username).'&ip='.$_SERVER['REMOTE_ADDR']);
+      $requestParams = [
+        'username' => $username,
+        'ip' => $_SERVER['REMOTE_ADDR']
+      ];
+      $etiRequest = new Curl('https://boards.endoftheinter.net/scripts/login.php?'.http_build_query($requestParams));
       $checkETI = $etiRequest->ssl(False)->get();
       if ($checkETI !== "1:".$username) {
         return False;
