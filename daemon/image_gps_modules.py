@@ -121,7 +121,7 @@ class Modules(update_daemon.UpdateModules):
       # add images to the database.
       if images_to_add:
         self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'added_on', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
-        # self.dbs['imagemap'].table('users').set(image_count=)
+        self.dbs['imagemap'].table('users').set('image_count=image_count+' + str(len(images_to_add))).where(id=request['user_id']).update()
 
       # unset password to indicate request is done.
       self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()
