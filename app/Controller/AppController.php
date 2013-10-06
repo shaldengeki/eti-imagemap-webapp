@@ -57,11 +57,11 @@ class AppController extends Controller {
       $this->loadModel('ScrapeRequest');
       $scrapeRequest = $this->ScrapeRequest->find('first', [
                                                   'conditions' => [
-                                                    'user_id' => $this->Auth->user('id')
+                                                    'user_id' => $this->Auth->user('id'),
                                                   ]
                                                 ]);
 
-      if ($scrapeRequest && $scrapeRequest['ScrapeRequest']['progress'] !== 100) {
+      if ($scrapeRequest && $scrapeRequest['ScrapeRequest']['progress'] != 100) {
         $this->set("authScrapeRequest", $scrapeRequest);
         $this->set("scrapeRequestErrors", ScrapeRequest::$ERRORS);
       }
