@@ -1,17 +1,33 @@
 <?php
-  if (isset($tagCounts) && is_array($tagCounts)) {
+  if (isset($tagListing) && is_array($tagListing)) {
+    // sort tag listing by number of occurrences descending.
     $counts = [];
-    foreach ($tagCounts as $key=>$tag) {
+    foreach ($tagListing as $key=>$tag) {
       $counts[$key] = $tag['count'];
     }
-    array_multisort($counts, SORT_DESC, $tagCounts);
+    array_multisort($counts, SORT_DESC, $tagListing);
 ?>
 <h3>Tags</h3>
 <ul class='tag-list'>
 <?php
-  foreach ($tagCounts as $tag) {
+  foreach ($tagListing as $tag) {
 ?>
-    <li><?php echo $this->Html->link($tag['name'], [
+    <li>
+      <?php echo $this->Html->link('+', [
+                                   'controller' => 'images',
+                                   'action' => 'index',
+                                   '?' => [
+                                    'tags' => $tag['addLink']
+                                   ]
+                                  ]); ?>
+      <?php echo $this->Html->link('-', [
+                                   'controller' => 'images',
+                                   'action' => 'index',
+                                   '?' => [
+                                    'tags' => $tag['removeLink']
+                                   ]
+                                  ]); ?>
+      <?php echo $this->Html->link($tag['name'], [
                                      'controller' => 'tags',
                                      'action' => 'view',
                                      $tag['id']

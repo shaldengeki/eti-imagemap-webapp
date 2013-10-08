@@ -49,8 +49,10 @@ class ImagesController extends AppController {
     // only list images that the user can view.
 
     // parse tag queries first.
+    $tagQuery = "";
     if (isset($this->request->query['tags'])) {
-      $tagSearch = $this->Tag->parseQuery($this->request->query['tags']);
+      $tagQuery = $this->request->query['tags'];
+      $tagSearch = $this->Tag->parseQuery($tagQuery);
       $this->paginate['Image']['conditions'][] = "MATCH(tags) AGAINST('".$this->Tag->sqlQuery($tagSearch)."' IN BOOLEAN MODE)";
     }
 
@@ -67,22 +69,24 @@ class ImagesController extends AppController {
     $this->set('images', $images);
 
     // count up the number of images tagged with each tag on this page.
-    $tagCounts = [];
+    $tagListing = [];
     foreach ($pageResults as $result) {
       if ($result['Image']['tags']) {
         $imageTags = explode(" ", $result['Image']['tags']);
         foreach ($imageTags as $tag) {
           $tag = $this->Tag->findByName($tag)['Tag'];
-          if (!isset($tagCounts[$tag['id']])) {
+          if (!isset($tagListing[$tag['id']])) {
             $tag['count'] = 1;
-            $tagCounts[$tag['id']] = $tag;
+            $tag['addLink'] = $this->Tag->appendToQuery($tag['name'], $tagQuery);
+            $tag['removeLink'] = $this->Tag->appendToQuery('-'.$tag['name'], $tagQuery);
+            $tagListing[$tag['id']] = $tag;
           } else {
-            $tagCounts[$tag['id']]['count']++;
+            $tagListing[$tag['id']]['count']++;
           }
         }
       }
     }
-    $this->set('tagCounts', $tagCounts);
+    $this->set('tagListing', $tagListing);
 
   }
 

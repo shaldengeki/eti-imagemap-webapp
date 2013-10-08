@@ -15,7 +15,6 @@ class TagsController extends AppController {
       'order' => [
         'Image.created' => 'desc'
       ],
-      'group' => 'Image.id',
       'recursive' => -1
     ]
   ];
@@ -44,25 +43,19 @@ class TagsController extends AppController {
     }
     $this->set('tag', $tag);
 
-    $this->Image = ClassRegistry::init('Image');
-    $this->Image->bindModel([
-                              'hasOne' => ['ImagesTag']
-                            ], False);
-
-    $paginateConditions = [
-       'ImagesTag.tag_id' => $tag['Tag']['id']
-    ];
+    // pull the images belonging to this tag.
+    $tagSearch = $this->Tag->parseQuery($tag['Tag']['name']);
+    $this->paginate['Image']['conditions'][] = "MATCH(tags) AGAINST('".$this->Tag->sqlQuery($tagSearch)."' IN BOOLEAN MODE)";
+    $this->Paginator->settings = $this->paginate;
 
     // filter out all images that the user cannot view.
     // TODO: work this into the paginate() call so we always pull a full page.
+    $this->Image = ClassRegistry::init('Image');
     $allowedImages = array_filter(
       array_map(
         function($i) {
           return $i['Image'];
-        }, $this->paginate('Image', [
-                           'ImagesTag.tag_id' => $tag['Tag']['id']
-                           ]
-                           )
+        }, $this->Paginator->paginate('Image')
       ), 
       function ($i) {
         return $this->Image->canView($i['id'], $this->Auth->user('id'));

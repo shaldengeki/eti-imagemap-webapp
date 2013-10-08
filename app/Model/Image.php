@@ -61,6 +61,9 @@ class Image extends AppModel {
         'message' => "Only valid boolean allowed"
       ]
     ],
+    'tags' => [
+       // no validations.
+    ],
     'tag_count' => [
       'naturalNumber' => [
         'rule' => ['naturalNumber', True],

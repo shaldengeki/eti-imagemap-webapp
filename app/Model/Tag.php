@@ -47,6 +47,32 @@ class Tag extends AppModel {
     return $results;
   }
 
+  public function stringQuery($tags) {
+    // takes an array of two arrays, allowed and denied tags
+    // returns the single-string query represented by this array
+
+    foreach ($tags['deny'] as $key=>$deniedTag) {
+      $tags['deny'][$key] = "-".$deniedTag;
+    }
+    return trim(implode(" ", $tags['allow'])." ".implode(" ", $tags['deny']));
+  }
+
+  public function appendToQuery($tag, $query) {
+    // takes a tag expression i.e. "nws" or "-gundam", and a string tag query
+    // returns the string query represented by tag AND query
+    $priorQuery = $this->parseQuery($query);
+    $type = "allow";
+    $tagName = $tag;
+    if (substr($tag, 0, 1) == "-") {
+      $type = "deny";
+      $tagName = substr($tag, 1);
+    }
+    if (!in_array($tagName, $priorQuery[$type])) {
+      $priorQuery[$type][] = $tagName;
+    }
+    return $this->stringQuery($priorQuery);
+  }
+
   public function sqlQuery($tags) {
     // takes an array of allowed and denied tags
     // returns a string formatted for a MATCH() AGAINST() query.

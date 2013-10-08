@@ -1,3 +1,7 @@
+<?php
+  $tagQuery = isset($this->request->query['tags']) ? $this->request->query['tags'] : "";
+?>
+
 <h3>Search</h3>
 <?php echo $this->Form->create('Image', [
                                'class' => 'form-inline',
@@ -10,7 +14,8 @@
     <?php echo $this->Form->input('tags', [
                                     'type' => 'text',
                                     'class' => 'form-control',
-                                    'placeholder' => 'tag_names'
+                                    'placeholder' => 'tag_names',
+                                    'value' => $tagQuery
                                   ]); ?>
   </div>
 <?php echo $this->Form->end(); ?>
