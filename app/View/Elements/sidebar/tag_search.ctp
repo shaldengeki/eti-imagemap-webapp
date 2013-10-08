@@ -8,6 +8,7 @@
   <div class='form-group'>
     <label class='sr-only' for='ImageTags'>Tags</label>
     <?php echo $this->Form->input('tags', [
+                                    'type' => 'text',
                                     'class' => 'form-control',
                                     'placeholder' => 'tag_names'
                                   ]); ?>

@@ -9,7 +9,8 @@ class ImagesController extends AppController {
       'limit' => 50,
       'order' => [
         'Image.created' => 'desc'
-      ]
+      ],
+      'conditions' => []
     ]
   ];
 
@@ -46,21 +47,14 @@ class ImagesController extends AppController {
 
   public function index() {
     // only list images that the user can view.
-    // if (isset($this->request->query['tags'])) {
-    //   // parse this tag query.
-    //   $tagSearch = $this->Tag->parseQuery($this->request->query['tags']);
-    //   $allowedTags = $this->Image->Tag->find('all', [
-    //                                           'conditions' => [
-    //                                             'Tag.name' => $tagSearch['allow']
-    //                                           ],
-    //                                           'order' => ['Tag.image_count ASC']
-    //                                         ]);
-    //   foreach ($allowedTags as $allowedTag) {
 
-    //   }
-    // }
+    // parse tag queries first.
+    if (isset($this->request->query['tags'])) {
+      $tagSearch = $this->Tag->parseQuery($this->request->query['tags']);
+      $this->paginate['Image']['conditions'][] = "MATCH(tags) AGAINST('".$this->Tag->sqlQuery($tagSearch)."' IN BOOLEAN MODE)";
+    }
 
-    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'];
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag', 'Image.tags'];
     $this->Paginator->settings = $this->paginate;
 
     $pageResults = array_filter($this->Paginator->paginate('Image')
@@ -75,8 +69,10 @@ class ImagesController extends AppController {
     // count up the number of images tagged with each tag on this page.
     $tagCounts = [];
     foreach ($pageResults as $result) {
-      if (isset($result['Tag'])) {
-        foreach ($result['Tag'] as $tag) {
+      if ($result['Image']['tags']) {
+        $imageTags = explode(" ", $result['Image']['tags']);
+        foreach ($imageTags as $tag) {
+          $tag = $this->Tag->findByName($tag)['Tag'];
           if (!isset($tagCounts[$tag['id']])) {
             $tag['count'] = 1;
             $tagCounts[$tag['id']] = $tag;

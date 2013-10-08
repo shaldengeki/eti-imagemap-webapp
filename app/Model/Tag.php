@@ -29,27 +29,36 @@ class Tag extends AppModel {
       'className' => 'User'
     ]
   ];
-  public $hasAndBelongsToMany = [
-    'Image' => [
-      'className' => 'Image',
-      'order' => 'ImagesTag.image_id DESC',
-      'counterCache' => True
-    ]
-  ];
 
-  public function parseQuery($query) {
+  public function parseQuery($tags) {
+    // takes a space-separated list of tags, e.g. "gif reaction -nws"
+    // returns an array of two arrays, allowed and denied tags
     $results = [
       'allow' => [],
       'deny' => []
     ];
-    foreach (explode(" ", $query) as $part) {
+    foreach (explode(" ", $tags) as $part) {
       if (substr($part, 0, 1) != "-") {
-        $results['allow'][] = $part;        
+        $results['allow'][] = preg_replace('/[^A-Za-z0-9\_]+/', '_', $part);
       } else {
-        $results['deny'][] = substr($part, 1);
+        $results['deny'][] = preg_replace('/[^A-Za-z0-9\_]+/', '_', substr($part, 1));
       }
     }
     return $results;
+  }
+
+  public function sqlQuery($tags) {
+    // takes an array of allowed and denied tags
+    // returns a string formatted for a MATCH() AGAINST() query.
+
+    $queryParts = [];
+    foreach ($tags['allow'] as $allowed) {
+      $queryParts[] = '+"'.$allowed.'"';
+    }
+    foreach ($tags['deny'] as $denied) {
+      $queryParts[] = '-"'.$denied.'"';
+    }
+    return implode(" ", $queryParts);
   }
 }
 ?>

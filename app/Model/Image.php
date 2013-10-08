@@ -75,13 +75,6 @@ class Image extends AppModel {
       'counterCache' => True
     ]
   ];
-  public $hasAndBelongsToMany = [
-    'Tag' => [
-      'className' => 'Tag',
-      'order' => 'ImagesTag.tag_id ASC',
-      'counterCache' => True
-    ]
-  ];
 
   public function __construct($id = False, $table = Null, $ds = Null) {
     parent::__construct($id, $table, $ds);
@@ -112,6 +105,15 @@ class Image extends AppModel {
   public function canView($image, $user) {
     // returns a boolean reflecting whether or not a given $user ID can view an $image.
     return (bool) ($this->isPublic($image) || $this->isOwnedBy($image, $user));
+  }
+
+  public function tagArray($tags) {
+    return explode(" ", $tags);
+  }
+
+  public function isTaggedWith($image, $tag) {
+    $tagArray = $this->tagArray($this->field('tags', ['id' => $image]));
+    return in_array($tag, $tagArray);
   }
 }
 ?>
