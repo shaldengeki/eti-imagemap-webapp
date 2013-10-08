@@ -2,6 +2,7 @@
 class ImagesController extends AppController {
   public $helpers = ['Html', 'Form'];
   public $components = ['Session', 'Paginator'];
+  public $uses = ['Image', 'Tag'];
 
   public $paginate = [
     'Image' => [
@@ -22,6 +23,7 @@ class ImagesController extends AppController {
         $this->Auth->allow('view');
       }
     }
+
   }
 
   public function isAuthorized($user) {
@@ -44,15 +46,48 @@ class ImagesController extends AppController {
 
   public function index() {
     // only list images that the user can view.
+    // if (isset($this->request->query['tags'])) {
+    //   // parse this tag query.
+    //   $tagSearch = $this->Tag->parseQuery($this->request->query['tags']);
+    //   $allowedTags = $this->Image->Tag->find('all', [
+    //                                           'conditions' => [
+    //                                             'Tag.name' => $tagSearch['allow']
+    //                                           ],
+    //                                           'order' => ['Tag.image_count ASC']
+    //                                         ]);
+    //   foreach ($allowedTags as $allowedTag) {
+
+    //   }
+    // }
+
     $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'];
     $this->Paginator->settings = $this->paginate;
-    $this->set('images', array_filter(array_map(function ($i) {
-          return $i['Image'];
-        }, 
-        $this->Paginator->paginate('Image')
-      ), function($i) {
-      return $this->Image->canView($i['id'], $this->Auth->user('id'));
-    }));
+
+    $pageResults = array_filter($this->Paginator->paginate('Image')
+                               , function($i) {
+                                return $this->Image->canView($i['Image']['id'], $this->Auth->user('id'));
+                              });
+    $images = array_map(function ($i) {
+      return $i['Image'];
+    }, $pageResults);
+    $this->set('images', $images);
+
+    // count up the number of images tagged with each tag on this page.
+    $tagCounts = [];
+    foreach ($pageResults as $result) {
+      if (isset($result['Tag'])) {
+        foreach ($result['Tag'] as $tag) {
+          if (!isset($tagCounts[$tag['id']])) {
+            $tag['count'] = 1;
+            $tagCounts[$tag['id']] = $tag;
+          } else {
+            $tagCounts[$tag['id']]['count']++;
+          }
+        }
+      }
+    }
+    $this->set('tagCounts', $tagCounts);
+
   }
 
   public function view($id = Null) {

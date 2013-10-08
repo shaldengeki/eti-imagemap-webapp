@@ -69,6 +69,10 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 	                                         'controller' => 'images',
 	                                         'action' => 'index'
 	        ]); ?></li>
+	        <li><?php echo $this->Html->link('Tags', [
+	                                         'controller' => 'tags',
+	                                         'action' => 'index'
+	        ]); ?></li>
 	        <li><?php echo $this->Html->link('Users', [
 	                                         'controller' => 'users',
 	                                         'action' => 'index'
@@ -114,13 +118,28 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 	  </div>
 	</div>
 	<div class="container">
-		<div id="content">
-			<?php echo $this->Session->flash(); ?>
-			<?php echo $this->Session->flash('auth'); ?>
+		<div class="row">
+<?php 
+	if ($this->fetch('sidebar')) {
+?>
+			<div id="sidebar" class="col-md-2">
+				<?php echo $this->fetch('sidebar'); ?>
+			</div>
+			<div id="content" class="col-md-10">
+<?php
+	} else {
+?>
+			<div id="content" class="col-md-12">
+<?php
+	}
+?>
+				<?php echo $this->Session->flash(); ?>
+				<?php echo $this->Session->flash('auth'); ?>
 
-			<?php echo $this->element('scrape_request_queue_banner'); ?>
+				<?php echo $this->element('scrape_request_queue_banner'); ?>
 
-			<?php echo $this->fetch('content'); ?>
+				<?php echo $this->fetch('content'); ?>
+			</div>
 		</div>
 		<hr />
 		<div id="footer">

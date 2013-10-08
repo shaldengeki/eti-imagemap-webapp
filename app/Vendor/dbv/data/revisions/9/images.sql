@@ -1,0 +1,1 @@
+ALTER TABLE `images` ADD `tag_count` INT UNSIGNED NOT NULL DEFAULT '0';

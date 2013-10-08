@@ -28,7 +28,6 @@ class ETIAuthenticate extends BaseAuthenticate {
         'username' => $username,
         'ip' => $_SERVER['REMOTE_ADDR']
       ];
-      print_r($requestParams);
       $etiRequest = new Curl('https://boards.endoftheinter.net/scripts/login.php?'.http_build_query($requestParams));
       $checkETI = $etiRequest->ssl(False)->get();
       if ($checkETI !== "1:".$username) {

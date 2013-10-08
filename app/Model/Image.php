@@ -60,11 +60,25 @@ class Image extends AppModel {
         'allowEmpty' => False,
         'message' => "Only valid boolean allowed"
       ]
+    ],
+    'tag_count' => [
+      'naturalNumber' => [
+        'rule' => ['naturalNumber', True],
+        'allowEmpty' => True,
+        'message' => "Must be a natural number or zero"
+      ]
     ]
   ];
   public $belongsTo = [
     'User' => [
       'className' => 'User',
+      'counterCache' => True
+    ]
+  ];
+  public $hasAndBelongsToMany = [
+    'Tag' => [
+      'className' => 'Tag',
+      'order' => 'ImagesTag.tag_id ASC',
       'counterCache' => True
     ]
   ];
