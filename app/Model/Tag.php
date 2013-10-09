@@ -90,5 +90,12 @@ class Tag extends AppModel {
     }
     return implode(" ", $queryParts);
   }
+
+  public function incrementImages($tag) {
+    $this->updateAll(
+      [$this->alias.'.image_count' => $this->alias.'.image_count+1'],
+      [$this->alias.'.id' => $tag]
+    );
+  }
 }
 ?>

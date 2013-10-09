@@ -56,6 +56,18 @@
                                       ]); ?>
       </div>
       <div class='form-group'>
+        <label for='ImageTags' class='col-lg-2 control-label'>Tags</label>
+        <?php echo $this->Form->input('tags', [
+                                      'type' => 'textarea',
+                                      'class' => 'form-control',
+                                      'placeholder' => 'space-separated list',
+                                      'div' => [
+                                        'class' => 'col-lg-10'
+                                      ],
+                                      'label' => False
+                                      ]); ?>
+      </div>
+      <div class='form-group'>
         <label for='ImagePrivate' class='col-lg-2 control-label'>Private</label>
         <?php echo $this->Form->input('private', [
                                       'class' => 'form-control',

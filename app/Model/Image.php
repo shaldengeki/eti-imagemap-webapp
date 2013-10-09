@@ -89,6 +89,37 @@ class Image extends AppModel {
     $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/\', %s.filename, \'\.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias, $this->alias);
   }
 
+  public function beforeSave($options=[]) {
+    // set tag_count to the length of the tag array.
+    parent::beforeSave($options);
+
+    if (isset($this->data['Image']['tags'])) {
+      $tagArray = $this->tagArray($this->data['Image']['tags']);
+      $this->data['Image']['tag_count'] = count($tagArray);
+    }
+    return True;
+  }
+
+  public function afterSave($created, $options=[]) {
+    // increment image_count for each of these tags.
+    parent::afterSave($created, $options);
+    if (isset($this->data['Image']['tags'])) {
+      $tagClass = ClassRegistry::init('Tag');
+
+      $tagString = strtolower($this->data['Image']['tags']);
+      $tags = $tagClass->find('all', [
+                               'conditions' => [
+                                'Tag.name' => $this->tagArray($tagString),
+                                ],
+                              'recursive' => -1
+                              ]);
+      $tagIDs = array_map(function($t) {
+        return $t['Tag']['id'];
+      }, $tags);
+      $tagClass->incrementImages($tagIDs);
+    }
+  }
+
   public function incrementHits($id) {
     $this->updateAll(
       [$this->alias.'.hits' => $this->alias.'.hits+1'],

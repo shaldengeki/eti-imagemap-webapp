@@ -24,7 +24,6 @@ class ImagesController extends AppController {
         $this->Auth->allow('view');
       }
     }
-
   }
 
   public function isAuthorized($user) {
