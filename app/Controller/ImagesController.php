@@ -71,8 +71,7 @@ class ImagesController extends AppController {
     $tagListing = [];
     foreach ($pageResults as $result) {
       if ($result['Image']['tags']) {
-        $imageTags = explode(" ", $result['Image']['tags']);
-        foreach ($imageTags as $tag) {
+        foreach ($this->Image->tagArray($result['Image']['tags']) as $tag) {
           $tag = $this->Tag->findByName($tag)['Tag'];
           if (!isset($tagListing[$tag['id']])) {
             $tag['count'] = 1;
@@ -86,7 +85,6 @@ class ImagesController extends AppController {
       }
     }
     $this->set('tagListing', $tagListing);
-
   }
 
   public function view($id = Null) {
@@ -102,7 +100,20 @@ class ImagesController extends AppController {
     $this->Image->incrementHits($id);
     $image['Image']['hits'] += 1;
 
+    $tagListing = [];
+    foreach ($this->Image->tagArray($image['Image']['tags']) as $tag) {
+      $tag = $this->Tag->findByName($tag)['Tag'];
+      $tagListing[$tag['id']] = [
+        'id' => $tag['id'],
+        'name' => $tag['name'],
+        'count' => $tag['image_count'],
+        'addLink' => $tag['name'],
+        'removeLink' => '-'.$tag['name']
+      ];
+    }
+
     $this->set('image', $image);
+    $this->set('tagListing', $tagListing);
   }
 
   public function add() {

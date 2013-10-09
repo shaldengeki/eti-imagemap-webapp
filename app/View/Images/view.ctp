@@ -1,4 +1,9 @@
 <!-- File: /app/View/Images/view.ctp -->
+<?php
+  $this->start('sidebar');
+    echo $this->element('sidebar/tag_list');
+  $this->end();
+?>
 <h1><?php echo h($image['Image']['hash']); ?></h1>
 <hr />
 <ul>

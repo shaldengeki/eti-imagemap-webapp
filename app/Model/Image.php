@@ -145,7 +145,8 @@ class Image extends AppModel {
   }
 
   public function tagArray($tags) {
-    return explode(" ", $tags);
+    $tags = trim($tags);
+    return !$tags ? [] : explode(" ", $tags);
   }
 
   public function isTaggedWith($image, $tag) {
