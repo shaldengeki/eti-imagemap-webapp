@@ -4,7 +4,7 @@ class Image extends AppModel {
     'server' => [
       'naturalNumber' => [
         'rule' => 'naturalNumber',
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => False,
         'message' => "Only natural numbers allowed"
       ],
@@ -16,19 +16,22 @@ class Image extends AppModel {
     'hash' => [
       'alphaNumeric' => [
         'rule' => 'alphaNumeric',
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => False,
         'message' => "Only alphanumeric characters allowed"
       ],
       'between' => [
         'rule' => ['between', 32, 32],
         'message' => "Must be exactly 32 characters long"
+      ],
+      'unique' => [
+        'rule' => 'isUnique'
       ]
     ],
     'filename' => [
       'between' => [
         'rule' => ['between', 1, 255],
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => False,
         'message' => "Must be between 1 and 255 characters long"
       ]      
@@ -36,7 +39,7 @@ class Image extends AppModel {
     'type' => [
       'alphaNumeric' => [
         'rule' => 'alphaNumeric',
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => False,
         'message' => "Only alphanumeric characters allowed"
       ],
@@ -56,7 +59,7 @@ class Image extends AppModel {
     'private' => [
       'boolean' => [
         'rule' => 'boolean',
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => False,
         'message' => "Only valid boolean allowed"
       ]

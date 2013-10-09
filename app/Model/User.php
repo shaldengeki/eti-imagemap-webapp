@@ -14,6 +14,10 @@ class User extends AppModel {
         'rule' => ['between', 1, 64],
         'allowEmpty' => False,
         'message' => "Must be between 1 and 64 characters long"
+      ],
+      'unique' => [
+        'rule' => 'isUnique',
+        'required' => 'create'
       ]
     ],
     'last_ip' => [
@@ -27,7 +31,7 @@ class User extends AppModel {
       'valid' => [
         'rule' => ['inList', ['admin', 'user']],
         'message' => 'Please enter a valid role',
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => False
       ]
     ],
