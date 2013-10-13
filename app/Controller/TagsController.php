@@ -1,7 +1,7 @@
 <?php
 class TagsController extends AppController {
   public $helpers = ['Html', 'Form'];
-  public $components = ['Session', 'Paginator'];
+  public $components = ['Session', 'Paginator', 'RequestHandler'];
 
   public $paginate = [
     'Tag' => [
@@ -101,6 +101,58 @@ class TagsController extends AppController {
 
     if (!$this->request->data) {
       $this->request->data = $tag;
+    }
+  }
+
+  public function power_tag() {
+    $this->layout = 'empty';
+    if ($this->request->is('post') || $this->request->is('put')) {
+      if (!isset($this->request->data['tags']) || !isset($this->request->data['ids'])) {
+        $this->set('result', -1);
+      } elseif (!$this->Auth->user('id')) {
+        $this->set('result', -2);
+      } else {
+        // proceed to power-tag images.
+        $this->Image = ClassRegistry::init('Image');
+        $imageIDs = explode(",", $this->request->data['ids']);
+        $userID = $this->Auth->user('id');
+        $tags = explode(" ", $this->request->data['tags']);
+
+        foreach ($imageIDs as $image) {
+          if ($this->Auth->user('role') === 'admin' || $this->Image->isOwnedBy($image, $userID)) {
+            $currImage = $this->Image->findById($image);
+            if (!$currImage) {
+              continue;
+            }
+
+            // only add tags that we need.
+            $currImageTags = $this->Image->tagArray($currImage['Image']['tags']);
+            $newTags = [];
+            foreach ($tags as $tag) {
+              $tag = $this->Tag->cleanName($tag);
+              if (!in_array($tag, $currImageTags)) {
+                $currImageTags[] = $tag;
+                $newTags[] = $tag;
+              }
+            }
+            if ($newTags) {
+              // tag this image with all the tags.
+              $finalTags = implode(" ", $currImageTags);
+              // create any tags that need to be created.
+              $this->Image->createTags(implode(" ", $newTags), $userID);
+
+              // update the image's tags' image_counts.
+              $this->Image->updateTags($currImage['Image']['tags'], $finalTags);
+
+              $this->Image->create();
+              $this->Image->id = $currImage['Image']['id'];
+              $currImage['Image']['tags'] = $finalTags;
+              $result = $this->Image->save($currImage);
+            }
+          }
+        }
+        $this->set('result', 1);
+      }
     }
   }
 

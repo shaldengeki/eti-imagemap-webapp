@@ -1,5 +1,6 @@
 <?php
   $tagQuery = isset($this->request->query['tags']) ? $this->request->query['tags'] : "";
+  $this->set('tagQuery', $tagQuery);
 ?>
 <div class='tag-search'>
   <h3>Search</h3>

@@ -34,6 +34,15 @@ class Tag extends AppModel {
     ]
   ];
 
+  public function cleanName($name) {
+    // sanitizes and standardizes a tag's name.
+    // lowercases, replaces spaces with underscores, removes all non-alphanumerics.
+    $name = strtolower($name);
+    $name = preg_replace("/\ +/", '_', $name);
+    $name = preg_replace("/[^a-zA-Z0-9\_]+/", '', $name);
+    return $name;
+  }
+
   public function parseQuery($tags) {
     // takes a space-separated list of tags, e.g. "gif reaction -nws"
     // returns an array of two arrays, allowed and denied tags
@@ -92,8 +101,23 @@ class Tag extends AppModel {
   }
 
   public function incrementImages($tag) {
-    $this->updateAll(
+    if (!$tag) {
+      return True;
+    }
+
+    return $this->updateAll(
       [$this->alias.'.image_count' => $this->alias.'.image_count+1'],
+      [$this->alias.'.id' => $tag]
+    );
+  }
+
+  public function decrementImages($tag) {
+    if (!$tag) {
+      return True;
+    }
+
+    return $this->updateAll(
+      [$this->alias.'.image_count' => $this->alias.'.image_count-1'],
       [$this->alias.'.id' => $tag]
     );
   }

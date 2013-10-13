@@ -43,7 +43,6 @@ class ImagesController extends AppController {
     return parent::isAuthorized($user);
   }  
 
-
   public function index() {
     // only list images that the user can view.
 
@@ -125,8 +124,19 @@ class ImagesController extends AppController {
       $this->request->data['Image']['hits'] = 0;
 
       if ($this->Image->save($this->request->data)) {
-        $this->Session->setFlash(__('Your image has been saved.'));
-        return $this->redirect(['action' => 'index']);
+        // create any non-extant tags.
+        $this->Image->createTags($this->request->data['Image']['tags'], $this->Auth->user('id'));
+
+        // update tag image_counts, if necessary.
+        if (isset($this->request->data['Image']['tags'])) {
+          $this->Image->updateTags("", $this->request->data['Image']['tags']);
+        }
+
+        $this->Session->setFlash(__('This image has been saved.'));
+        return $this->redirect([
+                                'action' => 'view',
+                                $this->Image->id
+                               ]);
       }
       $this->Session->setFlash(__('Unable to add your image.'));
     }
@@ -144,9 +154,19 @@ class ImagesController extends AppController {
 
     if ($this->request->is('post') || $this->request->is('put')) {
       $this->Image->id = $id;
+      $this->request->data['Image']['user_id'] = isset($image['Image']['user_id']) ? $image['Image']['user_id'] : $this->Auth->user('id');
       if ($this->Image->save($this->request->data)) {
-        $this->Session->setFlash(__('Your image has been updated.'));
-        return $this->redirect(['action' => 'index']);
+
+        // create any non-extant tags.
+        $this->Image->createTags($this->request->data['Image']['tags'], $this->Auth->user('id'));
+
+        // update tag image_counts, if necessary.
+        if (isset($this->request->data['Image']['tags'])) {
+          $this->Image->updateTags($image['Image']['tags'], $this->request->data['Image']['tags']);
+        }
+
+        $this->Session->setFlash(__('This image has been updated.'));
+        return $this->redirect(['action' => 'view', $id]);
       }
       $this->Session->setFlash(__('Unable to update your image.'));
     }
@@ -161,8 +181,16 @@ class ImagesController extends AppController {
       throw new MethodNotAllowedException();
     }
 
-    if ($this->Post->delete($id)) {
-      $this->Session->setFlash(__('The post with id: %s has been deleted.', h($id)));
+    $image = $this->Image->findById($id);
+    if (!$image) {
+      throw new NotFoundException(__('Invalid image'));
+    }    
+
+    if ($this->Image->delete($id)) {
+      // update tag image_counts.
+      $this->Image->updateTags($image['Image']['tags'], "");
+
+      $this->Session->setFlash(__('The image with id: %s has been deleted.', h($id)));
       return $this->redirect(['action' => 'index']);
     }
   }

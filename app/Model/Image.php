@@ -52,7 +52,7 @@ class Image extends AppModel {
       'naturalNumber' => [
         'rule' => 'naturalNumber',
         'required' => True,
-        'allowEmpty' => False,
+        'allowEmpty' => 'create',
         'message' => "Only natural numbers allowed"
       ]
     ],
@@ -96,28 +96,61 @@ class Image extends AppModel {
     if (isset($this->data['Image']['tags'])) {
       $tagArray = $this->tagArray($this->data['Image']['tags']);
       $this->data['Image']['tag_count'] = count($tagArray);
+      $this->data['Image']['tags'] = implode(" ", $tagArray);
     }
     return True;
   }
 
-  public function afterSave($created, $options=[]) {
-    // increment image_count for each of these tags.
-    parent::afterSave($created, $options);
-    if (isset($this->data['Image']['tags'])) {
-      $tagClass = ClassRegistry::init('Tag');
+  public function createTags($tags, $user) {
+    // creates any tags in the tag-string $tags under the user $user that don't already exist.
+    $tagArray = $this->tagArray($tags);
+    $success = True;
+    $tagClass = ClassRegistry::init('Tag');
 
-      $tagString = strtolower($this->data['Image']['tags']);
-      $tags = $tagClass->find('all', [
-                               'conditions' => [
-                                'Tag.name' => $this->tagArray($tagString),
-                                ],
-                              'recursive' => -1
-                              ]);
-      $tagIDs = array_map(function($t) {
-        return $t['Tag']['id'];
-      }, $tags);
-      $tagClass->incrementImages($tagIDs);
+    foreach ($tagArray as $tag) {
+      $findTag = $tagClass->find('first', [
+                              'conditions' => [
+                                'Tag.name' => $tag
+                              ]
+                             ]);
+      if (!$findTag) {
+        $tagClass->create();
+        $save = $tagClass->save([
+                              'Tag' => [
+                                'name' => $tag,
+                                'user_id' => $user,
+                                'image_count' => 0
+                              ]
+                            ]);
+        $success = $save && $success;
+      }
     }
+    return $success;
+  }
+
+  public function updateTags($beforeTags, $afterTags) {
+    // updates the image_counts of this image's tags during a save.
+    // $beforeTags and $afterTags should be an image's 'tags' attribute, i.e. space-separated strings of tag names.
+    $tagClass = ClassRegistry::init('Tag');
+
+    $beforeTags = $this->tagArray($beforeTags);
+    $afterTags = $this->tagArray($afterTags);
+
+    $removedTags = array_map(function ($t) use ($tagClass) {
+        $tag = $tagClass->findByName($t);
+        return $tag['Tag']['id'];
+      }, 
+      array_diff($beforeTags, $afterTags)
+    );
+
+    $addedTags = array_map(function ($t) use ($tagClass) {
+        $tag = $tagClass->findByName($t);
+        return $tag['Tag']['id'];
+      }, 
+      array_diff($afterTags, $beforeTags)
+    );
+
+    return $tagClass->decrementImages($removedTags) && $tagClass->incrementImages($addedTags);
   }
 
   public function incrementHits($id) {
@@ -146,7 +179,15 @@ class Image extends AppModel {
 
   public function tagArray($tags) {
     $tags = trim($tags);
-    return !$tags ? [] : explode(" ", $tags);
+    if (!$tags) {
+      return [];
+    }
+    $tagClass = ClassRegistry::init('Tag');
+    $tags = explode(" ", $tags);
+    foreach ($tags as $key=>$tag) {
+      $tags[$key] = $tagClass->cleanName($tag);
+    }
+    return $tags;
   }
 
   public function isTaggedWith($image, $tag) {
