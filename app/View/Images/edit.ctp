@@ -90,7 +90,7 @@
       </div>
       <div class='form-group'>
         <div class='col-lg-offset-2 col-lg-10'>
-          <?php echo $this->Form->button('Add Image', [
+          <?php echo $this->Form->button('Save Image', [
                                           'type' => 'submit',
                                           'class' => 'btn btn-default'
                                          ]); ?>
