@@ -2,7 +2,7 @@
 
 @import "bootstrap";
 body {
-    padding-top: @navbarHeight;
+    padding-top: @navbarHeight + 20px;
 }
 
 @defaultWidth      : 100%;
@@ -159,4 +159,26 @@ ul.image-grid {
     background-color: #fff;
     cursor: text;
   }
+}
+
+#sidebar {
+  ul {
+    padding-left: 10px;
+    li {
+      list-style: none;
+    }
+  }
+}
+
+.btn-item-select {
+
+}
+.btn-item-select-disabled {
+  opacity: 0.6;
+}
+.btn-item-select-active {
+
+}
+.btn-item-selected {
+  outline: 1px solid black;
 }

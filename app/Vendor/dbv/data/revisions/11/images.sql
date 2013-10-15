@@ -1,0 +1,1 @@
+ALTER TABLE `images` CHANGE `private` `private` TINYINT(2) UNSIGNED NOT NULL;
