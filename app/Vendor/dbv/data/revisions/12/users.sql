@@ -1,1 +1,1 @@
-ALTER TABLE `users` CHANGE `last_ip` `last_ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+ALTER TABLE `users` CHANGE `last_ip` `last_ip` VARCHAR(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
