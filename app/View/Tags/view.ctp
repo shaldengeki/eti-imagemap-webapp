@@ -1,18 +1,14 @@
-<!-- File: /app/View/Tags/view.ctp -->
 <?php
-  $created = DateTime::createFromFormat('Y-m-d H:i:s', $tag['Tag']['created']);
-  $tag['Tag']['created'] = $created->format('Y-m-d');
+  $this->start('sidebar');
+    echo $this->element('sidebar/tag_list');
+    echo $this->element('sidebar/tag_info');
+    echo $this->element('sidebar/image_power_menu');
+  $this->end();
 ?>
-
-<div class='page-header'>
-  <h1>Tag: <?php echo h($tag['Tag']['name']); ?></h1>
-</div>
-<ul>
-  <li>Created: <?php echo $tag['Tag']['created']; ?></li>
-  <li>Images: <?php echo $tag['Tag']['image_count']; ?></li>
-</ul>
-
+<!-- File: /app/View/Tags/view.ctp -->
 <h2>Images</h2>
 <?php echo $this->element('paginator'); ?>
-<?php echo $this->element('image_grid', ["images" => $images]); ?>
+<div id='images'>
+  <?php echo $this->element('image_grid', ["images" => $images]); ?>
+</div>
 <?php echo $this->element('paginator'); ?>

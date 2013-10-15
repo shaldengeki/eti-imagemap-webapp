@@ -2,7 +2,7 @@
 class UsersController extends AppController {
   public $helpers = ['Html', 'Form'];
   public $components = ['Session', 'Paginator'];
-  public $uses = ['User', 'Image'];
+  public $uses = ['User', 'Image', 'Tag'];
 
   public $paginate = [
     'User' => [
@@ -239,7 +239,7 @@ class UsersController extends AppController {
     }
     $this->set('user', $user);
 
-    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag'];
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag', 'Image.tags'];
     $this->Paginator->settings = $this->paginate;
     // if the signed-in user is neither the given user nor an admin, filter out all private images.
     if ($this->User->canViewPrivateImages($this->Auth->user('id'), $user['User']['id'])) {
@@ -256,6 +256,26 @@ class UsersController extends AppController {
     $this->set('images', array_map(function ($i) {
       return $i['Image'];
     }, $images));
+
+    // count up the number of images tagged with each tag on this page.
+    $tagListing = [];
+    foreach ($images as $result) {
+      if ($result['Image']['tags']) {
+        foreach ($this->Image->tagArray($result['Image']['tags']) as $tag) {
+          $tag = $this->Tag->findByName($tag)['Tag'];
+          if (!isset($tagListing[$tag['id']])) {
+            $tag['count'] = 1;
+            $tag['addLink'] = $tag['name'];
+            $tag['removeLink'] = '-'.$tag['name'];
+            $tagListing[$tag['id']] = $tag;
+          } else {
+            $tagListing[$tag['id']]['count']++;
+          }
+        }
+      }
+    }
+    $this->set('tagListing', $tagListing);
+
   }
 }
 ?>

@@ -2,6 +2,7 @@
 class TagsController extends AppController {
   public $helpers = ['Html', 'Form'];
   public $components = ['Session', 'Paginator', 'RequestHandler'];
+  public $uses = ['Tag', 'Image'];
 
   public $paginate = [
     'Tag' => [
@@ -46,22 +47,37 @@ class TagsController extends AppController {
     // pull the images belonging to this tag.
     $tagSearch = $this->Tag->parseQuery($tag['Tag']['name']);
     $this->paginate['Image']['conditions'][] = "MATCH(tags) AGAINST('".$this->Tag->sqlQuery($tagSearch)."' IN BOOLEAN MODE)";
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag', 'Image.tags'];
     $this->Paginator->settings = $this->paginate;
 
     // filter out all images that the user cannot view.
     // TODO: work this into the paginate() call so we always pull a full page.
-    $this->Image = ClassRegistry::init('Image');
-    $allowedImages = array_filter(
-      array_map(
-        function($i) {
-          return $i['Image'];
-        }, $this->Paginator->paginate('Image')
-      ), 
-      function ($i) {
-        return $this->Image->canView($i['id'], $this->Auth->user('id'));
+    $pageResults = array_filter($this->Paginator->paginate('Image'),
+                                function($i) {
+                                  return $this->Image->canView($i['Image']['id'], $this->Auth->user('id'));
+                                });
+    $this->set('images', array_map(function($i) {
+      return $i['Image'];
+    }, $pageResults));
+
+    // count up the number of images tagged with each tag on this page.
+    $tagListing = [];
+    foreach ($pageResults as $result) {
+      if ($result['Image']['tags']) {
+        foreach ($this->Image->tagArray($result['Image']['tags']) as $thisTag) {
+          $thisTag = $this->Tag->findByName($thisTag)['Tag'];
+          if (!isset($tagListing[$thisTag['id']])) {
+            $thisTag['count'] = 1;
+            $thisTag['addLink'] = $this->Tag->appendToQuery($thisTag['name'], $tag['Tag']['name']);
+            $thisTag['removeLink'] = $this->Tag->appendToQuery('-'.$thisTag['name'], $tag['Tag']['name']);
+            $tagListing[$thisTag['id']] = $thisTag;
+          } else {
+            $tagListing[$thisTag['id']]['count']++;
+          }
+        }
       }
-    );
-    $this->set('images', $allowedImages);
+    }
+    $this->set('tagListing', $tagListing);
   }
 
   public function add() {
