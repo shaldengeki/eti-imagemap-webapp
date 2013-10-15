@@ -36,6 +36,22 @@ class ScrapeRequest extends AppModel {
         'rule' => ['between', 1, 30],
         'message' => "Must be between 1 and 30 characters long"
       ]
+    ],
+    'permanent' => [
+      'boolean' => [
+        'rule' => 'boolean',
+        'required' => True,
+        'allowEmpty' => False,
+        'message' => "Only valid boolean allowed"
+      ]
+    ],
+    'private' => [
+      'boolean' => [
+        'rule' => 'boolean',
+        'required' => True,
+        'allowEmpty' => False,
+        'message' => "Only valid boolean allowed"
+      ]
     ]
   ];
   public $belongsTo = [

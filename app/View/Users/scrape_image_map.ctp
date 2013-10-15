@@ -21,6 +21,28 @@
                                       ]); ?>
       </div>
       <div class='form-group'>
+        <label for='UserPermanent' class='col-lg-2 control-label'>Remember me</label>
+        <?php echo $this->Form->input('permanent', [
+                                      'class' => 'form-control',
+                                      'type' => 'checkbox',
+                                      'div' => [
+                                        'class' => 'col-lg-1'
+                                      ],
+                                      'label' => False
+                                      ]); ?>
+      </div>
+      <div class='form-group'>
+        <label for='UserPrivate' class='col-lg-2 control-label'>Privatize images</label>
+        <?php echo $this->Form->input('private', [
+                                      'class' => 'form-control',
+                                      'type' => 'checkbox',
+                                      'div' => [
+                                        'class' => 'col-lg-1'
+                                      ],
+                                      'label' => False
+                                      ]); ?>
+      </div>
+      <div class='form-group'>
         <div class='col-lg-offset-2 col-lg-10'>
           <?php echo $this->Form->button('Update Imagemap', [
                                           'type' => 'submit',

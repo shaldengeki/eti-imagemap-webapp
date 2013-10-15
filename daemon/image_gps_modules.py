@@ -30,6 +30,7 @@ class Modules(update_daemon.UpdateModules):
     user_id = paramArray['user_id']
     page_num = paramArray['page_num']
     base_datetime = paramArray['base_datetime']
+    private = paramArray['private']
 
     page_datetime = base_datetime - datetime.timedelta(seconds=page_num)
 
@@ -62,13 +63,13 @@ class Modules(update_daemon.UpdateModules):
       else:
         image_ext = ext_match.group('extension')
 
-      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, 1])
+      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, private])
 
   def scrape_imagemaps(self):
     '''
     Processes the imagemap scraping queue.
     '''
-    if (datetime.datetime.now(tz=pytz.utc) - self.info['last_run_time']) < datetime.timedelta(seconds=1):
+    if (datetime.datetime.now(tz=pytz.utc) - self.info['last_run_time']) < datetime.timedelta(seconds=10):
       return
     self.info['last_run_time'] = datetime.datetime.now(tz=pytz.utc)
     self.daemon.log.info("Processing imagemap queue.")
@@ -106,7 +107,8 @@ class Modules(update_daemon.UpdateModules):
         'hashes': user_hashes,
         'user_id': request['user_id'],
         'base_datetime': base_datetime,
-        'page_num': 1
+        'page_num': 1,
+        'private': request['private']
       }
       self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
 
@@ -123,7 +125,12 @@ class Modules(update_daemon.UpdateModules):
         self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'created', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
         self.dbs['imagemap'].table('users').set('image_count=image_count+' + str(len(images_to_add))).where(id=request['user_id']).update()
 
-      # unset password to indicate request is done.
-      self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()
+      # set progress to finished.
+      if request['permanent'] > 0:
+        # this is a permanent scrape request. insert this back into the queue with the current time.
+        current_time = datetime.datetime.now(tz=pytz.utc).strftime('%Y-%m-%d %H:%M:%S')
+        self.dbs['imagemap'].table('scrape_requests').set(progress=0, date=current_time).where(user_id=request['user_id']).update()
+      else:
+        self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=100).where(user_id=request['user_id']).update()
 
       self.daemon.log.info("Inserted " + str(len(images_to_add)) + " images for userID " + str(request['user_id']) + ".")

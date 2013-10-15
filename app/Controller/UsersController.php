@@ -186,35 +186,32 @@ class UsersController extends AppController {
   public function scrape_image_map() {
     // scrape this user's imagemap.
 
+    $authedUser = $this->User->findById($this->Auth->user('id'));
+    $this->ScrapeRequest = ClassRegistry::init('ScrapeRequest');
+    $scrapeRequest = $authedUser['ScrapeRequest'];
+
     if ($this->request->is('post')) {
       // require password.
       if (isset($this->request->data) && isset($this->request->data['User']) && isset($this->request->data['User']['password'])) {
         $username = $this->Auth->user('name');
         $password = $this->request['data']['User']['password'];
-        // // log into mobile ETI as the user.
-        // try {
-        //   $eti = new EtiConnection($username, $password, "mobile");
-        // } catch (Exception $e) {
-        //   // failed to log into ETI.
-        //   $this->Session->setFlash(__("We weren't able to log into ETI. Please check your password and try again."));
-        //   return $this->redirect($this->referer());
-        // }
-        $this->ScrapeRequest = ClassRegistry::init('ScrapeRequest');
-        $authedUser = $this->User->findById($this->Auth->user('id'));
+        $permanent = $this->request['data']['User']['permanent'];
+        $private = $this->request['data']['User']['private'];
 
+        // queue a scrape request for this user.
         $scrapeRequestParams = [
                                'date' => date("Y-m-d H:i:s"),
                                'password' => $password,
-                               'progress' => 0
+                               'progress' => 0,
+                               'permanent' => $permanent,
+                               'private' => $private
                                ];
 
-        if ($authedUser['ScrapeRequest']['user_id']) {
+        if ($scrapeRequest['user_id']) {
           // user already has a scraperequest row. update with latest time.
-          $scrapeRequestParams['user_id'] = $this->ScrapeRequest->id = $authedUser['ScrapeRequest']['user_id'];
-          // echo "<pre>".print_r($scrapeRequestParams, True)."</pre>";
-          // exit;
-
+          $scrapeRequestParams['user_id'] = $this->ScrapeRequest->id = $scrapeRequest['user_id'];
         } else {
+          // user doesn't have a scraperequest row. create one.
           $this->ScrapeRequest->create();
           $scrapeRequestParams['user_id'] = $this->Auth->user('id');
         }
@@ -225,6 +222,10 @@ class UsersController extends AppController {
         }
       }
       $this->Session->setFlash(__("Could not queue your imagemap for scraping. Please try again!"));
+    }
+
+    if (!$this->request->data) {
+      $this->request->data = $scrapeRequest;
     }
   }
 
