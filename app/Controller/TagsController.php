@@ -61,23 +61,7 @@ class TagsController extends AppController {
     }, $pageResults));
 
     // count up the number of images tagged with each tag on this page.
-    $tagListing = [];
-    foreach ($pageResults as $result) {
-      if ($result['Image']['tags']) {
-        foreach ($this->Image->tagArray($result['Image']['tags']) as $thisTag) {
-          $thisTag = $this->Tag->findByName($thisTag)['Tag'];
-          if (!isset($tagListing[$thisTag['id']])) {
-            $thisTag['count'] = 1;
-            $thisTag['addLink'] = $this->Tag->appendToQuery($thisTag['name'], $tag['Tag']['name']);
-            $thisTag['removeLink'] = $this->Tag->appendToQuery('-'.$thisTag['name'], $tag['Tag']['name']);
-            $tagListing[$thisTag['id']] = $thisTag;
-          } else {
-            $tagListing[$thisTag['id']]['count']++;
-          }
-        }
-      }
-    }
-    $this->set('tagListing', $tagListing);
+    $this->setTagListing($pageResults, $tag['Tag']['name']);
   }
 
   public function add() {

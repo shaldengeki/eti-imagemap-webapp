@@ -88,5 +88,27 @@ class AppController extends Controller {
 
     // Default deny
     return False;
-  }  
+  }
+  public function setTagListing($images, $tagQuery="") {
+    // counts up the number of instances of each tag present in $images.
+    // sets the resultant array to tagListing.
+
+    $tagListing = [];
+    foreach ($images as $image) {
+      if ($image['Image']['tags']) {
+        foreach ($this->Image->tagArray($image['Image']['tags']) as $tag) {
+          $tag = $this->Tag->findByName($tag)['Tag'];
+          if (!isset($tagListing[$tag['id']])) {
+            $tag['count'] = 1;
+            $tag['addLink'] = $this->Tag->appendToQuery($tag['name'], $tagQuery);
+            $tag['removeLink'] = $this->Tag->appendToQuery('-'.$tag['name'], $tagQuery);
+            $tagListing[$tag['id']] = $tag;
+          } else {
+            $tagListing[$tag['id']]['count']++;
+          }
+        }
+      }
+    }
+    $this->set('tagListing', $tagListing);    
+  }
 }
