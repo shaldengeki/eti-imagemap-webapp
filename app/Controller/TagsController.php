@@ -29,7 +29,7 @@ class TagsController extends AppController {
     // TODO: allow user to power-tag if he owns all the images provided.
 
     return parent::isAuthorized($user);
-
+  }
   public function index() {
     $this->set('tags', $this->Tag->find('all', [
                 'fields' => ['Tag.id', 'Tag.name', 'Tag.image_count'],
