@@ -1,3 +1,4 @@
+// TODO: refactor item select menu functions into an ItemSelectMenu class.
 function saveItemSelectMenu(elt, parentElt) {
   // submits an item-select menu to the provided endpoint given by the data-url attribute of elt.
   // parentElt is the parent interface element that is initialized when elt is rendered.

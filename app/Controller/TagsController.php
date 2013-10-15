@@ -20,11 +20,15 @@ class TagsController extends AppController {
     ]
   ];
 
+  public function beforeFilter() {
+    parent::beforeFilter();
+  }
+
   public function isAuthorized($user) {
     // Only admins can change tags.
+    // TODO: allow user to power-tag if he owns all the images provided.
 
     return parent::isAuthorized($user);
-  }  
 
   public function index() {
     $this->set('tags', $this->Tag->find('all', [
@@ -118,6 +122,7 @@ class TagsController extends AppController {
         $userID = $this->Auth->user('id');
         $tags = explode(" ", $this->request->data['tags']);
 
+        $results = [];
         foreach ($imageIDs as $image) {
           if ($this->Auth->user('role') === 'admin' || $this->Image->isOwnedBy($image, $userID)) {
             $currImage = $this->Image->findById($image);
@@ -147,11 +152,11 @@ class TagsController extends AppController {
               $this->Image->create();
               $this->Image->id = $currImage['Image']['id'];
               $currImage['Image']['tags'] = $finalTags;
-              $result = $this->Image->save($currImage);
+              $results[$image] = intval($this->Image->save($currImage));
             }
           }
         }
-        $this->set('result', 1);
+        $this->set('results', $results);
       }
     }
   }

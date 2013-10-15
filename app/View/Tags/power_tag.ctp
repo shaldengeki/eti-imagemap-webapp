@@ -1,6 +1,14 @@
 <?php
-  if (isset($result)) {
-    echo $result;
+  if (isset($results)) {
+    if (!is_array($results)) {
+      echo $results;
+    } else {
+      $success = True;
+      foreach ($results as $result) {
+        $success = $success && (bool) $result;
+      }
+      echo intval($success);
+    }
   } else {
 ?>
 <div class='form-group'>
