@@ -51,7 +51,7 @@ class Image extends AppModel {
     'user_id' => [
       'naturalNumber' => [
         'rule' => 'naturalNumber',
-        'required' => True,
+        'required' => 'create',
         'allowEmpty' => 'create',
         'message' => "Only natural numbers allowed"
       ]
@@ -128,7 +128,7 @@ class Image extends AppModel {
     return $success;
   }
 
-  public function updateTags($beforeTags, $afterTags) {
+  public function updateTagImageCounts($beforeTags, $afterTags) {
     // updates the image_counts of this image's tags during a save.
     // $beforeTags and $afterTags should be an image's 'tags' attribute, i.e. space-separated strings of tag names.
     $tagClass = ClassRegistry::init('Tag');
@@ -138,17 +138,25 @@ class Image extends AppModel {
 
     $removedTags = array_map(function ($t) use ($tagClass) {
         $tag = $tagClass->findByName($t);
-        return $tag['Tag']['id'];
+        return $tag ? $tag['Tag']['id'] : Null;
       }, 
       array_diff($beforeTags, $afterTags)
     );
 
     $addedTags = array_map(function ($t) use ($tagClass) {
         $tag = $tagClass->findByName($t);
-        return $tag['Tag']['id'];
+        return $tag ? $tag['Tag']['id']: Null;
       }, 
       array_diff($afterTags, $beforeTags)
     );
+
+    $removedTags = array_filter($removedTags, function($t) {
+      return $t !== Null;
+    });
+
+    $addedTags = array_filter($addedTags, function($t) {
+      return $t !== Null;
+    });
 
     return $tagClass->decrementImages($removedTags) && $tagClass->incrementImages($addedTags);
   }
@@ -188,6 +196,56 @@ class Image extends AppModel {
       $tags[$key] = $tagClass->cleanName($tag);
     }
     return $tags;
+  }
+
+  public function updateTags($image, $tags) {
+    // updates a given $image to be tagged with an array of $tags names.
+    $beforeTags = $this->tagArray($this->field('tags', ['id' => $image]));
+    if ($tags != $beforeTags) {
+      $this->updateTagImageCounts(implode(" ", $beforeTags), implode(" ", $tags));
+
+      // save this image's resultant tags.
+      $this->id = $image;
+      $this->save(['Image' => [
+                    'id' => $image,
+                    'tags' => implode(" ", $tags)
+                  ]]);
+    }    
+  }
+
+  public function addTags($image, $tags) {
+    // adds an array of $tag names to a given $image.
+
+    $beforeTags = $this->tagArray($this->field('tags', ['id' => $image]));
+    $afterTags = $beforeTags;
+    foreach ($tags as $tag) {
+      if (!in_array($tag, $afterTags)) {
+        $afterTags[] = $tag;
+      }
+    }
+    $this->updateTags($image, $afterTags);
+  }
+  public function addTag($image, $tag) {
+    // alias of addTags.
+    return $this->addTags($image, [$tag]);
+  }
+
+  public function removeTags($image, $tags) {
+    // removes an array of $tag names from a given $image.
+
+    $beforeTags = $this->tagArray($this->field('tags', ['id' => $image]));
+    $afterTags = $beforeTags;
+    foreach ($tags as $tag) {
+      $findTag = array_search($tag, $afterTags);
+      if ($findTag !== False) {
+        unset($afterTags[$findTag]);
+      }
+    }
+    $this->updateTags($image, $afterTags);
+  }
+  public function removeTag($image, $tag) {
+    // alias of removeTags.
+    return $this->removeTags($image, [$tag]);
   }
 
   public function isTaggedWith($image, $tag) {

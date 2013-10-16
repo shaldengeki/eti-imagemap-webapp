@@ -52,9 +52,9 @@ class Tag extends AppModel {
     ];
     foreach (explode(" ", $tags) as $part) {
       if (substr($part, 0, 1) != "-") {
-        $results['allow'][] = preg_replace('/[^A-Za-z0-9\_]+/', '_', $part);
+        $results['allow'][] = $this->cleanName($part);
       } else {
-        $results['deny'][] = preg_replace('/[^A-Za-z0-9\_]+/', '_', substr($part, 1));
+        $results['deny'][] = $this->cleanName(substr($part, 1));
       }
     }
     return $results;
@@ -75,10 +75,10 @@ class Tag extends AppModel {
     // returns the string query represented by tag AND query
     $priorQuery = $this->parseQuery($query);
     $type = "allow";
-    $tagName = $tag;
+    $tagName = $this->cleanName($tag);
     if (substr($tag, 0, 1) == "-") {
       $type = "deny";
-      $tagName = substr($tag, 1);
+      $tagName = $this->cleanName(substr($tag, 1));
     }
     if (!in_array($tagName, $priorQuery[$type])) {
       $priorQuery[$type][] = $tagName;
@@ -92,10 +92,10 @@ class Tag extends AppModel {
 
     $queryParts = [];
     foreach ($tags['allow'] as $allowed) {
-      $queryParts[] = '+"'.$allowed.'"';
+      $queryParts[] = '+"'.$this->cleanName($allowed).'"';
     }
     foreach ($tags['deny'] as $denied) {
-      $queryParts[] = '-"'.$denied.'"';
+      $queryParts[] = '-"'.$this->cleanName($denied).'"';
     }
     return implode(" ", $queryParts);
   }
@@ -120,6 +120,17 @@ class Tag extends AppModel {
       [$this->alias.'.image_count' => $this->alias.'.image_count-1'],
       [$this->alias.'.id' => $tag]
     );
+  }
+
+  public function getImages($tag) {
+    // returns a list of all images tagged with this tag.
+    $imageClass = ClassRegistry::init('Image');
+    $tagSearch = $this->parseQuery($tag);
+    return $imageClass->find('all', [
+                              'conditions' => [
+                                "MATCH(tags) AGAINST('".$this->sqlQuery($tagSearch)."' IN BOOLEAN MODE)"
+                              ]
+                             ]);
   }
 }
 ?>

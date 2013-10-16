@@ -113,7 +113,7 @@ class ImagesController extends AppController {
 
         // update tag image_counts, if necessary.
         if (isset($this->request->data['Image']['tags'])) {
-          $this->Image->updateTags("", $this->request->data['Image']['tags']);
+          $this->Image->updateTagImageCounts("", $this->request->data['Image']['tags']);
         }
 
         $this->Session->setFlash(__('This image has been saved.'));
@@ -146,7 +146,7 @@ class ImagesController extends AppController {
 
         // update tag image_counts, if necessary.
         if (isset($this->request->data['Image']['tags'])) {
-          $this->Image->updateTags($image['Image']['tags'], $this->request->data['Image']['tags']);
+          $this->Image->updateTagImageCounts($image['Image']['tags'], $this->request->data['Image']['tags']);
         }
 
         $this->Session->setFlash(__('This image has been updated.'));
@@ -172,7 +172,7 @@ class ImagesController extends AppController {
 
     if ($this->Image->delete($id)) {
       // update tag image_counts.
-      $this->Image->updateTags($image['Image']['tags'], "");
+      $this->Image->updateTagImageCounts($image['Image']['tags'], "");
 
       $this->Session->setFlash(__('The image with id: %s has been deleted.', h($id)));
       return $this->redirect(['action' => 'index']);

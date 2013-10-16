@@ -2,7 +2,7 @@
 if (isset($images) && isset($authUser)) {
 ?>
 <div class='image-power-menu'>
-  <h3>Menu</h3>
+  <h3>Power Menu</h3>
   <ul>
     <li>
       <?php echo $this->Form->button('Add to List', [

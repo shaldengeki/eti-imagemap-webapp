@@ -2,6 +2,7 @@
   $this->start('sidebar');
     echo $this->element('sidebar/tag_list');
     echo $this->element('sidebar/tag_info');
+    echo $this->element('sidebar/tag_menu');
     echo $this->element('sidebar/image_power_menu');
   $this->end();
 ?>

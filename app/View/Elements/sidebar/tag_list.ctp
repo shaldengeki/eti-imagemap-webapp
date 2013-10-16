@@ -26,6 +26,9 @@
                                     'tags' => $tag['addLink']
                                   ]
                                 ]);
+?>
+        &nbsp;
+<?php
           echo $this->Html->link('-', [
                                   'controller' => 'images',
                                   'action' => 'index',
@@ -34,7 +37,8 @@
                                   ]
                                 ]);
         }
-        ?>
+?>
+        &nbsp;
         <?php echo $this->Html->link($tag['name'], [
                                        'controller' => 'tags',
                                        'action' => 'view',

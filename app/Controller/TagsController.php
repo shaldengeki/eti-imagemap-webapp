@@ -25,9 +25,14 @@ class TagsController extends AppController {
   }
 
   public function isAuthorized($user) {
-    // Only admins can change tags.
     // TODO: allow user to power-tag if he owns all the images provided.
 
+    // All users are allowed to search for tags.
+    if ($this->action == "autocomplete") {
+      return True;
+    }
+
+    // Only admins can change tags.
     return parent::isAuthorized($user);
   }
   public function index() {
@@ -109,7 +114,7 @@ class TagsController extends AppController {
   }
 
   public function power_tag() {
-    $this->layout = 'empty';
+    $this->layout = 'ajax';
     if ($this->request->is('post') || $this->request->is('put')) {
       if (!isset($this->request->data['tags']) || !isset($this->request->data['ids'])) {
         $this->set('result', -1);
@@ -147,7 +152,7 @@ class TagsController extends AppController {
               $this->Image->createTags(implode(" ", $newTags), $userID);
 
               // update the image's tags' image_counts.
-              $this->Image->updateTags($currImage['Image']['tags'], $finalTags);
+              $this->Image->updateTagImageCounts($currImage['Image']['tags'], $finalTags);
 
               $this->Image->create();
               $this->Image->id = $currImage['Image']['id'];
@@ -161,13 +166,41 @@ class TagsController extends AppController {
     }
   }
 
+  public function autocomplete() {
+    $this->layout = 'ajax';
+    if (!isset($this->request->query['query'])) {
+      $this->set('tags', []);
+    } else {
+      $query = trim($this->request->query['query']);
+      $this->paginate['Tag']['limit'] = 20;
 
+      //TODO: MAKE THIS SAFE
+      // $this->paginate['Tag']['conditions'][] = 'Tag.name LIKE "'.$query.'%"';
+
+      $this->paginate['Tag']['order'] = ["Tag.name" =>  "asc"];
+      $this->Paginator->settings = $this->paginate;
+
+      $this->set('tags', $this->Paginator->paginate('Tag'));
+    }
+  }
   public function delete($id) {
     if ($this->request->is('get')) {
       throw new MethodNotAllowedException();
     }
 
+    $tag = $this->Tag->findById($id);
+    if (!$tag) {
+      throw new NotFoundException(__('Invalid tag'));
+    }
+
     if ($this->Tag->delete($id)) {
+      $this->Image = ClassRegistry::init('Image');
+
+      // remove this tag from all images.
+      $images = $this->Tag->getImages($tag['Tag']['name']);
+      foreach ($images as $image) {
+        $this->Image->removeTag($image['Image']['id'], $tag['Tag']['name']);
+      }
       $this->Session->setFlash(__('The tag with id: %s has been deleted.', h($id)));
       return $this->redirect(['action' => 'index']);
     }
