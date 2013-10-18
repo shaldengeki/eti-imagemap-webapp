@@ -22,16 +22,13 @@ class TagsController extends AppController {
 
   public function beforeFilter() {
     parent::beforeFilter();
+
+    // All users are allowed to search for tags.
+    $this->Auth->allow('autocomplete');
   }
 
   public function isAuthorized($user) {
     // TODO: allow user to power-tag if he owns all the images provided.
-
-    // All users are allowed to search for tags.
-    if ($this->action == "autocomplete") {
-      return True;
-    }
-
     // Only admins can change tags.
     return parent::isAuthorized($user);
   }
