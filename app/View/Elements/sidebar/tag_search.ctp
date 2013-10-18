@@ -14,9 +14,16 @@
       <label class='sr-only' for='ImageTags'>Tags</label>
       <?php echo $this->Form->input('tags', [
                                       'type' => 'text',
-                                      'class' => 'form-control',
+                                      'class' => 'form-control autocomplete',
                                       'placeholder' => 'tag_names',
-                                      'value' => $tagQuery
+                                      'value' => $tagQuery,
+                                      'data-url' => $this->Html->url([
+                                                                     'controller' => 'tags',
+                                                                     'action' => 'autocomplete',
+                                                                     '?' => [
+                                                                      'query' => ''
+                                                                     ]
+                                                                     ])
                                     ]); ?>
     </div>
   <?php echo $this->Form->end(); ?>

@@ -202,6 +202,7 @@ class Image extends AppModel {
     // updates a given $image to be tagged with an array of $tags names.
     $beforeTags = $this->tagArray($this->field('tags', ['id' => $image]));
     if ($tags != $beforeTags) {
+
       $this->updateTagImageCounts(implode(" ", $beforeTags), implode(" ", $tags));
 
       // save this image's resultant tags.

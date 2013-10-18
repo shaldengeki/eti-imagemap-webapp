@@ -40,8 +40,10 @@ $appDescription = __d('cake_dev', 'ImageGPS: Simple imagemap tracker');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
+		echo $this->Html->css('jquery-ui-1.10.3.custom.min');
 
 		echo $this->Html->script('jquery.min');
+		echo $this->Html->script('//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js');
 		echo $this->Html->script('ZeroClipboard.min');
 		echo $this->Html->script('bootstrap.min');
 		echo $this->Html->script('site');

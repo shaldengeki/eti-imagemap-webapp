@@ -1,3 +1,10 @@
+function split(val) {
+  return val.split(/\s+/);
+}
+function extractLastTag(tags) {
+  return split(tags).pop();
+}
+
 // TODO: refactor item select menu functions into an ItemSelectMenu class.
 function saveItemSelectMenu(elt, parentElt) {
   // submits an item-select menu to the provided endpoint given by the data-url attribute of elt.
@@ -33,7 +40,6 @@ function saveItemSelectMenu(elt, parentElt) {
           console.log("Saved: " + data);
          }
          );
-
 }
 
 function toggleItemSelectMenu(elt, parentElt) {
@@ -115,6 +121,43 @@ function initInterface(elt) {
   $(elt).find(".btn-item-select").each(function() {
     $(this).click(function() {
       toggleItemSelectMenu(this, elt);
+    });
+  });
+
+  // autocompletion fields.
+  $('.autocomplete').each(function() {
+    var inputElt = this;
+    $(this).autocomplete({
+        source: function(request, response) {
+          var searchTag = extractLastTag($(inputElt).val());
+          var url = $(inputElt).attr('data-url') + encodeURIComponent(searchTag);
+          $.getJSON(url,
+                    function(data) {
+                      response($.map(data, function(tag) {
+                        return {
+                          label: tag.name,
+                          value: tag.name
+                        }
+                      }));
+                    }
+          );
+        },
+        minLength: 2,
+        select: function(event, ui) {
+          var terms = split(this.value);
+          terms.pop();
+          terms.push(ui.item.value);
+          terms.push("");
+          this.value = terms.join(" ");
+          console.log(ui.item ? "Selected: " + ui.item.label : "Nothing selected, input was: " + this.value);
+          return false;
+        },
+        open: function() {
+          $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+        },
+        close: function() {
+          $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+        }        
     });
   });
 }

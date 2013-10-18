@@ -136,6 +136,7 @@ class TagsController extends AppController {
             }
 
             // only add tags that we need.
+            $this->Image->addTags($image, $tags);
             $currImageTags = $this->Image->tagArray($currImage['Image']['tags']);
             $newTags = [];
             foreach ($tags as $tag) {
@@ -172,10 +173,10 @@ class TagsController extends AppController {
       $this->set('tags', []);
     } else {
       $query = trim($this->request->query['query']);
-      $this->paginate['Tag']['limit'] = 20;
 
-      //TODO: MAKE THIS SAFE
-      // $this->paginate['Tag']['conditions'][] = 'Tag.name LIKE "'.$query.'%"';
+
+      $this->paginate['Tag']['limit'] = 20;
+      $this->paginate['Tag']['conditions']['Tag.name LIKE'] = $query.'%';
 
       $this->paginate['Tag']['order'] = ["Tag.name" =>  "asc"];
       $this->Paginator->settings = $this->paginate;
