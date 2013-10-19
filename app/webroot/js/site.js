@@ -127,9 +127,13 @@ function initInterface(elt) {
   // autocompletion fields.
   $('.autocomplete').each(function() {
     var inputElt = this;
+    var minLength = 2;
     $(this).autocomplete({
         source: function(request, response) {
           var searchTag = extractLastTag($(inputElt).val());
+          if (searchTag.length < minLength) {
+            return;
+          }
           var url = $(inputElt).attr('data-url') + encodeURIComponent(searchTag);
           $.getJSON(url,
                     function(data) {
@@ -142,7 +146,7 @@ function initInterface(elt) {
                     }
           );
         },
-        minLength: 2,
+        minLength: minLength,
         select: function(event, ui) {
           var terms = split(this.value);
           terms.pop();

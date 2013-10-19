@@ -170,7 +170,10 @@ class TagsController extends AppController {
       $this->set('tags', []);
     } else {
       $query = trim($this->request->query['query']);
-
+      if (mb_strlen($query) < 2) {
+        $this->set('tags', []);
+        return;
+      }
 
       $this->paginate['Tag']['limit'] = 20;
       $this->paginate['Tag']['conditions']['Tag.name LIKE'] = $query.'%';
