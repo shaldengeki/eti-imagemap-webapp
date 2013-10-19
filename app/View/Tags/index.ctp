@@ -1,27 +1,26 @@
-<!-- File: /app/View/Tags/index.ctp -->
+<div class='page-header'>
+  <h1>Tags</h1>
+</div>
 
-<h1>Tags</h1>
-<table>
-  <tr>
-    <th>Id</th>
-    <th>Name</th>
-  </tr>
-
+<?php echo $this->element('paginator'); ?>
+<table class='table table-hover'>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Images</th>
+    </tr>
+  </thead>
+  <tbody>
   <?php foreach ($tags as $tag): ?>
-  <tr>
-    <td><?php echo $tag['Tag']['id']; ?></td>
-    <td>
-      <?php echo $this->Html->link($tag['Tag']['name'],
+    <tr>
+      <td>
+        <?php echo $this->Html->link($tag['Tag']['name'],
 array('controller' => 'tags', 'action' => 'view', $tag['Tag']['id'])); ?>
-    </td>
-  </tr>
+      </td>
+      <td><?php echo $tag['Tag']['image_count']; ?></td>
+    </tr>
   <?php endforeach; ?>
   <?php unset($tag); ?>
+  </tbody>
 </table>
-<?php
-  echo $this->Html->link('Add Tag', 
-                         [
-                           'controller' => 'tags',
-                           'action' => 'add'
-                        ]);
-?>
+<?php echo $this->element('paginator'); ?>

@@ -60,8 +60,15 @@
         <label for='ImageTags' class='col-lg-2 control-label'>Tags</label>
         <?php echo $this->Form->input('tags', [
                                       'type' => 'textarea',
-                                      'class' => 'form-control',
+                                      'class' => 'form-control autocomplete',
                                       'placeholder' => 'space-separated list',
+                                      'data-url' => $this->Html->url([
+                                                                     'controller' => 'tags',
+                                                                     'action' => 'autocomplete',
+                                                                     '?' => [
+                                                                      'query' => ''
+                                                                     ]
+                                                                     ]),
                                       'div' => [
                                         'class' => 'col-lg-10'
                                       ],

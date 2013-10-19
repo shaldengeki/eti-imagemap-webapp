@@ -50,10 +50,11 @@ class UsersController extends AppController {
   }  
 
   public function index() {
-    $this->set('users', $this->User->find('all', [
-                'fields' => ['User.id', 'User.name', 'User.image_count'],
-                'recursive' => -1
-               ]));
+    $this->paginate['User']['fields'] = ['User.id', 'User.name', 'User.created', 'User.role', 'User.image_count'];
+    $this->paginate['User']['recursive'] = -1;
+
+    $this->Paginator->settings = $this->paginate;
+    $this->set('users', $this->Paginator->paginate('User'));
   }
 
   public function view($id = Null) {

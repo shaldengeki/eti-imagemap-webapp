@@ -8,7 +8,7 @@ class TagsController extends AppController {
     'Tag' => [
       'limit' => 50,
       'order' => [
-        'Tag.id' => 'desc'
+        'Tag.name' => 'asc'
       ]
     ],
     'Image' => [
@@ -28,15 +28,20 @@ class TagsController extends AppController {
   }
 
   public function isAuthorized($user) {
-    // TODO: allow user to power-tag if he owns all the images provided.
+    // all logged-in users can access power-tag.
+    if ($this->action == "power_tag") {
+      return True;
+    }
+
     // Only admins can change tags.
     return parent::isAuthorized($user);
   }
   public function index() {
-    $this->set('tags', $this->Tag->find('all', [
-                'fields' => ['Tag.id', 'Tag.name', 'Tag.image_count'],
-                'recursive' => -1
-               ]));
+    $this->paginate['Tag']['fields'] = ['Tag.id', 'Tag.name', 'Tag.image_count'];
+    $this->paginate['Tag']['recursive'] = -1;
+
+    $this->Paginator->settings = $this->paginate;
+    $this->set('tags', $this->Paginator->paginate('Tag'));
   }
 
   public function view($id = Null) {
