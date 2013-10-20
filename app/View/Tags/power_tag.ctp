@@ -14,8 +14,15 @@
 <div class='form-group'>
   <?php
     echo $this->Form->input('tags',[
-                              'class' => 'form-control',
+                              'class' => 'form-control autocomplete',
                               'placeholder' => 'tags',
+                              'data-url' => $this->Html->url([
+                                                             'controller' => 'tags',
+                                                             'action' => 'autocomplete',
+                                                             '?' => [
+                                                              'query' => ''
+                                                             ]
+                                                             ]),
                               'div' => [
                                 'class' => 'col-lg-10'
                               ],

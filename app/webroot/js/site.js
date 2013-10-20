@@ -64,6 +64,7 @@ function toggleItemSelectMenu(elt, parentElt) {
 
       $.get(injectUrl, function (data) {
         $(injectTarget).html(data);
+        initInterface(injectTarget);
       });
     }
 
