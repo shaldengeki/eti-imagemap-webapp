@@ -69,7 +69,7 @@ class Modules(update_daemon.UpdateModules):
     # scrapes an ETI imagemap in serial.
     image_count = 0
     for page_num in range(start, end+1):
-      self.daemon.log.info('Fetching imagemap page ' + str(page_num) + ' for userID: ' + params['user_id'])
+      self.daemon.log.info('Fetching imagemap page ' + str(page_num) + ' for userID: ' + str(params['user_id']))
       map_page_params = urllib.urlencode([('page', str(page_num))])
       params['page_num'] = page_num
       try:
@@ -77,7 +77,7 @@ class Modules(update_daemon.UpdateModules):
         imap_page = eti.page(url).html
       except albatross.PageLoadError:
         # error while loading ETI imap page.
-        self.daemon.log.error("Error loading imagemap page: " + url + " for userID: " + params['user_id'])
+        self.daemon.log.error("Error loading imagemap page: " + url + " for userID: " + str(params['user_id']))
         self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=-2).where(user_id=params['user_id']).update()
         return
       # if no images are added from this page, we're done.
