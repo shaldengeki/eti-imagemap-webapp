@@ -6,9 +6,6 @@
     echo $this->element('sidebar/image_power_menu');
   $this->end();
 ?>
-<div class='page-header'>
-  <h1>Images</h1>
-</div>
 <?php echo $this->element('paginator'); ?>
 <div id='images'>
   <?php echo $this->element('image_grid', ["images" => $images]); ?>

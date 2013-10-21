@@ -23,7 +23,11 @@
                                                                      '?' => [
                                                                       'query' => ''
                                                                      ]
-                                                                     ])
+                                                                     ]),
+                                      'label' => False,
+                                      'div' => [
+                                        'class' => 'col-lg-12'
+                                      ]
                                     ]); ?>
     </div>
   <?php echo $this->Form->end(); ?>

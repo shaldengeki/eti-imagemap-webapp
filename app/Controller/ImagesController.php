@@ -41,7 +41,7 @@ class ImagesController extends AppController {
     }
 
     return parent::isAuthorized($user);
-  }  
+  }
 
   public function index() {
     // only list images that the user can view.

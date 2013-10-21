@@ -33,7 +33,8 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
   public $helpers = [
-    'Js' => ['Jquery']
+    'Js' => ['Jquery'],
+    'Topbar'
   ];
   public $components = [
     'DebugKit.Toolbar',

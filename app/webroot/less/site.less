@@ -1,12 +1,14 @@
-@navbarHeight: 40px;
+// @navbarHeight: 40px;
 
 @import "bootstrap";
 body {
-    padding-top: @navbarHeight + 20px;
+  // padding-top: @navbarHeight + 20px;
 }
 
-@defaultWidth      : 100%;
-@defaultMaxWidth   : 100%;
+@defaultWidth           : 100%;
+@defaultMaxWidth        : 100%;
+@horizontalPadding      : 20px;
+@navTabHorizontalPadding: 10px;
 
 @normText          : #333333;
 @blueHover         : blue;
@@ -59,6 +61,8 @@ h1, h2, h3, h4, h5, h6 {
   max-width: @defaultMaxWidth;
   margin: 0 auto;
   position: relative;
+  padding-left: @horizontalPadding;
+  padding-right: @horizontalPadding;
 }
 
 .clearfix:before,
@@ -88,6 +92,51 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* logo */
+#logo {
+  padding: 0 @horizontalPadding;
+  a {
+    font-weight: bold;
+  }
+}
+
+/* topbar */
+#topbar {
+  .main, .sub {
+    padding: 0 (@horizontalPadding - @navTabHorizontalPadding);
+    font-size: 18px;
+  }
+  .main {
+    a {
+      padding: 5px @navTabHorizontalPadding;
+    }
+    .login a {
+      font-weight: bold;
+      color: #e00;
+    }
+    .active {
+      a {
+        background: #f7f7ff;
+        font-weight: bold;
+      }
+    }
+  }
+  .sub {
+    .clearfix;
+    list-style: none;
+    background: #f7f7ff;
+    li {
+      float: left;
+      margin: 0;
+      a {
+        padding: 6px @navTabHorizontalPadding;
+      }
+    }
+  }
+}
+
+
+/* image grid */
 ul.image-grid {
   .clearfix;
   margin: 0;
@@ -131,6 +180,7 @@ ul.image-grid {
   }
 }
 
+/* copy/paste buttons */
 .copy-button {
   top: 0px;
   background-image: -moz-linear-gradient(#fafafa, #eaeaea);
@@ -161,6 +211,7 @@ ul.image-grid {
   }
 }
 
+/* sidebar */
 #sidebar {
   ul {
     padding-left: 10px;
