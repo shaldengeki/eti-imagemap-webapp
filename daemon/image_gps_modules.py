@@ -151,9 +151,9 @@ class Modules(update_daemon.UpdateModules):
       # if this is the user's first scrape, do this in parallel.
       # otherwise do this in serial so we can break.
       if not user_hashes:
-        self.scrape_map_parallel(eti, start_page_num, end_page_num, params)
+        self.scrape_map_parallel(eti, start_page_num, last_page_num, params)
       else:
-        self.scrape_map_serial(eti, start_page_num, end_page_num, params)
+        self.scrape_map_serial(eti, start_page_num, last_page_num, params)
 
       # add images to the database.
       if images_to_add:
