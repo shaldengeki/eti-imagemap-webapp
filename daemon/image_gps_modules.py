@@ -63,7 +63,7 @@ class Modules(update_daemon.UpdateModules):
       else:
         image_ext = ext_match.group('extension')
 
-      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, private])
+      images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, '', private])
 
   def scrape_imagemaps(self):
     '''
@@ -128,7 +128,7 @@ class Modules(update_daemon.UpdateModules):
 
       # add images to the database.
       if images_to_add:
-        self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'created', 'hits', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
+        self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'created', 'hits', 'tags', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
         self.dbs['imagemap'].table('users').set('image_count=image_count+' + str(len(images_to_add))).where(id=request['user_id']).update()
 
       # set progress to finished.
