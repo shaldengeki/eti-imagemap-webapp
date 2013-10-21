@@ -55,12 +55,14 @@ class AppController extends Controller {
       $this->set("authUser", $this->Auth->user());
 
       // set authScrapeRequest to current-user-scrape request object if user is logged in AND has a pending imagemap scrape request.
+      // do NOT set authScrapeRequest if the request is permanent (don't want users being hounded!)
       $this->loadModel('ScrapeRequest');
       $scrapeRequest = $this->ScrapeRequest->find('first', [
                                                   'conditions' => [
                                                     'user_id' => $this->Auth->user('id'),
-                                                    'ScrapeRequest.progress < 100',
-                                                    'ScrapeRequest.password IS NOT NULL'
+                                                    'ScrapeRequest.progress <' => 100,
+                                                    'ScrapeRequest.password IS NOT NULL',
+                                                    'ScrapeRequest.permanent !=' => 1
                                                   ]
                                                 ]);
 

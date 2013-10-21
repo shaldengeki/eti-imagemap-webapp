@@ -24,13 +24,13 @@ class Modules(update_daemon.UpdateModules):
                               self.scrape_imagemaps
                             ]
 
-  def process_imagemap_page(self, text, url, curlHandle, paramArray):
-    images = paramArray['images']
-    hashes = paramArray['hashes']
-    user_id = paramArray['user_id']
-    page_num = paramArray['page_num']
-    base_datetime = paramArray['base_datetime']
-    private = paramArray['private']
+  def process_imagemap_page(self, text, url, curlHandle, params):
+    images = params['images']
+    hashes = params['hashes']
+    user_id = params['user_id']
+    page_num = params['page_num']
+    base_datetime = params['base_datetime']
+    private = params['private']
 
     page_datetime = base_datetime - datetime.timedelta(seconds=page_num)
 
@@ -65,6 +65,35 @@ class Modules(update_daemon.UpdateModules):
 
       images.append([image_server, image_hash, image_filename, image_ext, user_id, page_datetime.strftime('%Y-%m-%d %H:%M:%S'), 0, '', private])
 
+  def scrape_map_serial(self, eti, start, end, params):
+    # scrapes an ETI imagemap in serial.
+    image_count = 0
+    for page_num in range(start, end+1):
+      map_page_params = urllib.urlencode([('page', str(page_num))])
+      params['page_num'] = page_num
+      try:
+        url = 'https://images.endoftheinter.net/imagemap.php?' + map_page_params
+        imap_page = eti.page(url).html
+      except albatross.PageLoadError:
+        # error while loading ETI imap page.
+        self.daemon.log.error("Error loading imagemap page: " + url + " for userID: " + params['user_id'])
+        self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=-2).where(user_id=params['user_id']).update()
+        return
+      # if no images are added from this page, we're done.
+      self.process_imagemap_page(imap_page, url, None, params)
+      if len(params['images']) == image_count:
+        break
+      image_count = len(params['images'])
+
+  def scrape_map_parallel(self, eti, start, end, params):
+    # launches a parallelized cURL request to process an ETI imagemap.
+    num_pages = end - 1
+    for page_num in range(start, end+1):
+      map_page_params = urllib.urlencode([('page', str(page_num))])
+      params['page_num'] = page_num
+      eti.parallelCurl.startrequest('https://images.endoftheinter.net/imagemap.php?' + map_page_params, self.process_imagemap_page, params)
+    eti.parallelCurl.finishallrequests()
+
   def scrape_imagemaps(self):
     '''
     Processes the imagemap scraping queue.
@@ -94,7 +123,7 @@ class Modules(update_daemon.UpdateModules):
 
       base_datetime = datetime.datetime.now(tz=pytz.utc)
       images_to_add = []
-      parallelcurl_params = {
+      params = {
         'images': images_to_add,
         'hashes': user_hashes,
         'user_id': request['user_id'],
@@ -114,17 +143,17 @@ class Modules(update_daemon.UpdateModules):
 
         # process the first imagemap page that we've already gotten.
         start_page_num = 2
-        self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
+        self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, params)
       else:
         last_page_num = int(request['max_pages'])
 
       # now loop over all the other pages (if there are any).
-      num_pages = last_page_num - 1
-      for page_num in range(start_page_num, last_page_num+1):
-        map_page_params = urllib.urlencode([('page', str(page_num))])
-        parallelcurl_params['page_num'] = page_num
-        eti.parallelCurl.startrequest('https://images.endoftheinter.net/imagemap.php?' + map_page_params, self.process_imagemap_page, parallelcurl_params)
-      eti.parallelCurl.finishallrequests()
+      # if this is the user's first scrape, do this in parallel.
+      # otherwise do this in serial so we can break.
+      if not user_hashes:
+        self.scrape_map_parallel(eti, start_page_num, end_page_num, params)
+      else:
+        self.scrape_map_serial(eti, start_page_num, end_page_num, params)
 
       # add images to the database.
       if images_to_add:
