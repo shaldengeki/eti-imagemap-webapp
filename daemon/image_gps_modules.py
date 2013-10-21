@@ -69,6 +69,7 @@ class Modules(update_daemon.UpdateModules):
     # scrapes an ETI imagemap in serial.
     image_count = 0
     for page_num in range(start, end+1):
+      self.daemon.log.info('Fetching imagemap page ' + str(page_num) + ' for userID: ' + params['user_id'])
       map_page_params = urllib.urlencode([('page', str(page_num))])
       params['page_num'] = page_num
       try:
@@ -151,8 +152,10 @@ class Modules(update_daemon.UpdateModules):
       # if this is the user's first scrape, do this in parallel.
       # otherwise do this in serial so we can break.
       if not user_hashes:
+        self.daemon.log.info('Fetching imagemap in parallel.')
         self.scrape_map_parallel(eti, start_page_num, last_page_num, params)
       else:
+        self.daemon.log.info('Fetching imagemap in serial.')
         self.scrape_map_serial(eti, start_page_num, last_page_num, params)
 
       # add images to the database.
