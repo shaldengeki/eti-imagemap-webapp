@@ -145,6 +145,10 @@ class Modules(update_daemon.UpdateModules):
         # process the first imagemap page that we've already gotten.
         start_page_num = 2
         self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, params)
+        if not params['images']:
+          # usermap is unchanged. break.
+          self.daemon.log.info('First imagemap page is unchanged for userID ' + str(request['user_id']) + '. Skipping.')
+          continue
       else:
         last_page_num = int(request['max_pages'])
 
