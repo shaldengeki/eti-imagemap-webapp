@@ -148,6 +148,7 @@ class Modules(update_daemon.UpdateModules):
         if not params['images']:
           # usermap is unchanged. break.
           self.daemon.log.info('First imagemap page is unchanged for userID ' + str(request['user_id']) + '. Skipping.')
+          self.dbs['imagemap'].table('scrape_requests').set(progress=0).where(user_id=request['user_id']).update()
           continue
       else:
         last_page_num = int(request['max_pages'])
