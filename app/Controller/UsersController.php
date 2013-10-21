@@ -68,20 +68,16 @@ class UsersController extends AppController {
     }
     $this->set('user', $user);
 
+    $this->paginate['Image']['limit'] = 20;
     $this->paginate['Image']['conditions'] = [
       'Image.user_id' => $user['User']['id'],
     ];
     // if the signed-in user is neither the given user nor an admin, filter out all private images.
     if ($this->User->canViewPrivateImages($this->Auth->user('id'), $user['User']['id'])) {
-      $images = $this->Paginator->paginate('Image', [
-                  'Image.user_id' => $user['User']['id'],
-                  'Image.private' => False
-                 ]);
-    } else {
-      $images = $this->Paginator->paginate('Image', [
-                                    'Image.user_id' => $user['User']['id'],
-                                    ]);
+      $this->paginate['Image']['conditions']['Image.private'] = False;
     }
+    $this->Paginator->settings = $this->paginate;
+    $images = $this->Paginator->paginate('Image');
 
     // only return images, not joined things.
     $this->set('images', array_map(function ($i) {
