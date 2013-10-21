@@ -28,6 +28,10 @@
           'controller' => 'users',
           'action' => 'edit',
           $authUser['id']
+        ],
+        'Log Out' => [
+          'controller' => 'users',
+          'action' => 'logout'
         ]
       ]
     ];

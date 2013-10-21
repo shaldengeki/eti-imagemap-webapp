@@ -92,14 +92,6 @@ class Modules(update_daemon.UpdateModules):
       user_hashes = self.dbs['imagemap'].table('images').fields('hash').where(user_id=request['user_id']).list(valField='hash')
       user_hashes = {image_hash:1 for image_hash in user_hashes}
 
-      # fetch imagemap's first page to get number of pages.
-      imap_first_page_html = eti.page('https://images.endoftheinter.net/imagemap.php').html
-      imap_first_page = bs4.BeautifulSoup(imap_first_page_html)
-      infobar = imap_first_page.find('div', {'class': 'infobar'})
-      last_page_link = infobar.find_all('a')[-1]
-      last_page_num = int(albatross.getEnclosedString(last_page_link.attrs['href'], 'page=', ''))
-
-      # process the first imagemap page that we've already gotten.
       base_datetime = datetime.datetime.now(tz=pytz.utc)
       images_to_add = []
       parallelcurl_params = {
@@ -110,11 +102,25 @@ class Modules(update_daemon.UpdateModules):
         'page_num': 1,
         'private': request['private']
       }
-      self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
+
+      start_page_num = 1
+      if request['max_pages'] is None:
+        # fetch imagemap's first page to get number of pages.
+        imap_first_page_html = eti.page('https://images.endoftheinter.net/imagemap.php').html
+        imap_first_page = bs4.BeautifulSoup(imap_first_page_html)
+        infobar = imap_first_page.find('div', {'class': 'infobar'})
+        last_page_link = infobar.find_all('a')[-1]
+        last_page_num = int(albatross.getEnclosedString(last_page_link.attrs['href'], 'page=', ''))
+
+        # process the first imagemap page that we've already gotten.
+        start_page_num = 2
+        self.process_imagemap_page(imap_first_page_html, 'https://images.endoftheinter.net/imagemap.php?page=1', None, parallelcurl_params)
+      else:
+        last_page_num = int(request['max_pages'])
 
       # now loop over all the other pages (if there are any).
       num_pages = last_page_num - 1
-      for page_num in range(2, last_page_num+1):
+      for page_num in range(start_page_num, last_page_num+1):
         map_page_params = urllib.urlencode([('page', str(page_num))])
         parallelcurl_params['page_num'] = page_num
         eti.parallelCurl.startrequest('https://images.endoftheinter.net/imagemap.php?' + map_page_params, self.process_imagemap_page, parallelcurl_params)

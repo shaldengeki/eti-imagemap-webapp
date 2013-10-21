@@ -43,6 +43,19 @@
                                       ]); ?>
       </div>
       <div class='form-group'>
+        <label for='UserMaxPages' class='col-lg-2 control-label'>Max Page #</label>
+        <?php echo $this->Form->input('max_pages', [
+                                      'type' => 'number',
+                                      'min' => 1,
+                                      'step' => 1,
+                                      'class' => 'form-control',
+                                      'div' => [
+                                        'class' => 'col-lg-2'
+                                      ],
+                                      'label' => False
+                                      ]); ?>
+      </div>
+      <div class='form-group'>
         <div class='col-lg-offset-2 col-lg-10'>
           <?php echo $this->Form->button('Update Imagemap', [
                                           'type' => 'submit',

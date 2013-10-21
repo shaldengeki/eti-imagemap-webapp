@@ -1,0 +1,1 @@
+ALTER TABLE `scrape_requests` ADD `max_pages` INT UNSIGNED NULL DEFAULT NULL AFTER `progress`;

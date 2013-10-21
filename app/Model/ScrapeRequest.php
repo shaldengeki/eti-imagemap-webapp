@@ -31,6 +31,12 @@ class ScrapeRequest extends AppModel {
         'message' => "Please enter a number"
       ]
     ],
+    'max_pages' => [
+      'naturalNumber' => [
+        'rule' => 'naturalNumber',
+        'message' => "Only natural numbers allowed"
+      ]
+    ],
     'password' => [
       'between' => [
         'rule' => ['between', 1, 30],

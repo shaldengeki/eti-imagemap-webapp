@@ -73,6 +73,8 @@ class TagsController extends AppController {
 
     // count up the number of images tagged with each tag on this page.
     $this->setTagListing($pageResults, $tag['Tag']['name']);
+
+    $this->set('title_for_layout', $tag['Tag']['name']);
   }
 
   public function add() {
@@ -89,6 +91,7 @@ class TagsController extends AppController {
       }
       $this->Session->setFlash(__('Unable to add your tag.'));
     }
+    $this->set('title_for_layout', 'Adding Tag');
   }
 
   public function edit($id = Null) {
@@ -112,6 +115,7 @@ class TagsController extends AppController {
 
     if (!$this->request->data) {
       $this->request->data = $tag;
+      $this->set('title_for_layout', 'Editing '.$tag['Tag']['name']);
     }
   }
 

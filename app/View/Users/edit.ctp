@@ -1,5 +1,4 @@
 <!-- File: /app/View/Users/edit.ctp -->
-
 <div class='page-header'>
   <h1>Account Settings</h1>
 </div>
@@ -83,6 +82,19 @@
                                           'type' => 'checkbox',
                                           'div' => [
                                             'class' => 'col-lg-1'
+                                          ],
+                                          'label' => False
+                                          ]); ?>
+          </div>
+          <div class='form-group'>
+            <label for='UserMaxPages' class='col-lg-2 control-label'>Max Page #</label>
+            <?php echo $this->Form->input('max_pages', [
+                                          'type' => 'number',
+                                          'min' => 1,
+                                          'step' => 1,
+                                          'class' => 'form-control',
+                                          'div' => [
+                                            'class' => 'col-lg-2'
                                           ],
                                           'label' => False
                                           ]); ?>

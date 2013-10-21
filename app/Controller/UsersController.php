@@ -87,6 +87,8 @@ class UsersController extends AppController {
     $this->set('images', array_map(function ($i) {
       return $i['Image'];
     }, $images));
+
+    $this->set('title_for_layout', $user['User']['name']);
   }
 
   public function add() {
@@ -114,6 +116,7 @@ class UsersController extends AppController {
         $this->Session->setFlash(__('Unable to register you.'));
       }
     }
+    $this->set('title_for_layout', "Sign up");
   }
 
   public function edit($id = Null) {
@@ -148,6 +151,7 @@ class UsersController extends AppController {
 
     if (!$this->request->data) {
       $this->request->data = $user;
+      $this->set('title_for_layout', "User settings");
     }
   }
 
@@ -174,6 +178,7 @@ class UsersController extends AppController {
       }
       $this->Session->setFlash(__("You're not logged in on ETI under that username; please log in on ETI and try again."));
     }
+    $this->set('title_for_layout', "Log in");
   }
 
   public function logout() {
@@ -261,6 +266,7 @@ class UsersController extends AppController {
 
     // count up the number of images tagged with each tag on this page.
     $this->setTagListing($images, '');
+    $this->set('title_for_layout', $user['User']['name']."'s images");
   }
 }
 ?>

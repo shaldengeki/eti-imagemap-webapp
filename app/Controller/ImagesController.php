@@ -95,6 +95,7 @@ class ImagesController extends AppController {
       ];
     }
 
+    $this->set('title_for_layout', $image['Image']['tags']);
     $this->set('image', $image);
     $this->set('tagListing', $tagListing);
   }
@@ -124,6 +125,7 @@ class ImagesController extends AppController {
       }
       $this->Session->setFlash(__('Unable to add your image.'));
     }
+    $this->set('title_for_layout', 'Adding Image');
   }
 
   public function edit($id = Null) {
@@ -157,6 +159,7 @@ class ImagesController extends AppController {
 
     if (!$this->request->data) {
       $this->request->data = $image;
+      $this->set('title_for_layout', "Editing ".$image['Image']['tags']);
     }
   }
 
