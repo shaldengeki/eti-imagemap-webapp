@@ -3,7 +3,8 @@ class ScrapeRequest extends AppModel {
 
   // Error codes that progress is set to in case of imagemap scrape failure.
   public static $ERRORS = [
-    -1 => "Invalid password"
+    -1 => "Invalid password",
+    -2 => "Error fetching ETI imagemap page"
   ];
 
   public $primaryKey = 'user_id';

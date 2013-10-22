@@ -112,10 +112,10 @@ class Modules(update_daemon.UpdateModules):
       self.daemon.log.info("Processing usermap ID " + str(request['user_id']) + ".")
       self.dbs['imagemap'].table('scrape_requests').set(progress=1).where(user_id=request['user_id']).update()
 
-      eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
-      if not eti.loggedIn():
+      try:
+        eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
+      except albatross.UnauthorizedError:
         # incorrect password, or ETI is down.
-        # TODO: add reason into update scrape_requests
         self.daemon.log.info("Incorrect password or ETI down for usermap ID " + str(request['user_id']) + ". Skipping.")
         self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=-1).where(user_id=request['user_id']).update()
         continue
