@@ -102,6 +102,16 @@ function toggleItemSelectMenu(elt, parentElt) {
   }
 }
 
+function setImageRescaleClass(elt) {
+  console.log("Image: " + $(elt).height() + "x" + $(elt).width());
+  console.log($(elt).height() < $(elt).width());
+  if ($(elt).height() < $(elt).width()) {
+    $(elt).addClass('full-width');
+  } else {
+    $(elt).addClass('full-height');
+  }
+}
+
 function initInterface(elt) {
   // initializes all interface elements and events within a given element.
 
@@ -164,6 +174,20 @@ function initInterface(elt) {
           $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
         }        
     });
+  });
+
+  // rescale images.
+  $('img.scale').each(function() {
+    $(this).hide();
+    if (this.complete) {
+      setImageRescaleClass(this);
+      $(this).show();
+    } else {
+      $(this).load(function() {
+        setImageRescaleClass(this);
+        $(this).show();
+      });
+    }
   });
 }
 $(document).ready(function () {

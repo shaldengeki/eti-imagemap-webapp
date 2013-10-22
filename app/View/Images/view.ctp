@@ -6,11 +6,16 @@
     echo $this->element('sidebar/image_menu');
   $this->end();
 ?>
-<?php echo $this->Html->link(
-                             $this->Html->image($image['Image']['eti_url']),
-                             $image['Image']['eti_url'],
-                             [
-                              'target' => '_blank',
-                              'escape' => False
-                             ]
-                             ); ?>
+<div id='image'>
+  <?php echo $this->Html->link(
+                               $this->Html->image($image['Image']['eti_url'],
+                                                  [
+                                                    'class' => 'scale',
+                                                  ]),
+                               $image['Image']['eti_url'],
+                               [
+                                'target' => '_blank',
+                                'escape' => False
+                               ]
+                               ); ?>
+</div>
