@@ -32,6 +32,8 @@ class Modules(update_daemon.UpdateModules):
     base_datetime = params['base_datetime']
     private = params['private']
 
+    # shift the "created" time back by this page number.
+    # this way images that are further back are recorded as "older".
     page_datetime = base_datetime - datetime.timedelta(seconds=page_num)
 
     # split out the image tags on this imagemap page.
