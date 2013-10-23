@@ -179,7 +179,7 @@ class Modules(update_daemon.UpdateModules):
 
       # add images to the database.
       if images_to_add:
-        self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'created', 'hits', 'tags', 'private').values(images_to_add).onDuplicateKeyUpdate('id=id').insert()
+        self.dbs['imagemap'].table('images').fields('server', 'hash', 'filename', 'type', 'user_id', 'created', 'hits', 'tags', 'private').values(images_to_add).onDuplicateKeyUpdate('hash=hash').insert()
         self.dbs['imagemap'].table('users').set('image_count=image_count+' + str(len(images_to_add))).where(id=request['user_id']).update()
 
       # set progress to finished.
