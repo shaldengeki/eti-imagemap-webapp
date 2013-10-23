@@ -50,7 +50,7 @@ class Modules(update_daemon.UpdateModules):
 
       if image_hash in hashes:
         # image has already been added. done processing.
-        return
+        continue
 
       # remove extension from image filename.
       image_filename = '.'.join(thumb_url_parts[6].split('.')[0:-1])
