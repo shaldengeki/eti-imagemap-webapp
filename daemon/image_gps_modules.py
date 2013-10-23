@@ -69,7 +69,7 @@ class Modules(update_daemon.UpdateModules):
 
   def scrape_map_serial(self, eti, start, end, params):
     # scrapes an ETI imagemap in serial.
-    image_count = 0
+    image_count = len(params['images'])
     for page_num in range(start, end+1):
       self.daemon.log.info('Fetching imagemap page ' + str(page_num) + ' for userID: ' + str(params['user_id']))
       map_page_params = urllib.urlencode([('page', str(page_num))])
