@@ -112,13 +112,25 @@ class Modules(update_daemon.UpdateModules):
       self.daemon.log.info("Processing usermap ID " + str(request['user_id']) + ".")
       self.dbs['imagemap'].table('scrape_requests').set(progress=1).where(user_id=request['user_id']).update()
 
+      # attempt to use a cookie string for this user, if one is provided.
       try:
-        eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
+        if request['user_id'] not in self.info['cookie_strings']:
+          eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
+        else:
+          try:
+            eti = albatross.Connection(cookieString=self.info['cookie_strings'][request['user_id']], loginSite=albatross.SITE_MOBILE)
+          except albatross.UnauthorizedError:
+            # cookie string is expired. try to login to grab a new one.
+            del self.info['cookie_strings'][request['user_id']]
+            eti = albatross.Connection(username=request['name'], password=request['password'], loginSite=albatross.SITE_MOBILE)
       except albatross.UnauthorizedError:
         # incorrect password, or ETI is down.
         self.daemon.log.info("Incorrect password or ETI down for usermap ID " + str(request['user_id']) + ". Skipping.")
         self.dbs['imagemap'].table('scrape_requests').set(password=None, progress=-1).where(user_id=request['user_id']).update()
         continue
+
+      # store the latest cookie string for this user.
+      self.info['cookie_strings'][request['user_id']] = eti.cookieString
 
       # get this user's currently-uploaded image hashes.
       user_hashes = self.dbs['imagemap'].table('images').fields('hash').where(user_id=request['user_id']).list(valField='hash')

@@ -33,6 +33,9 @@ class image_gps(update_daemon.UpdateDaemon):
       # scrape requests queue is empty.
       self.info['last_run_time'] = datetime.datetime.now(tz=pytz.utc)
 
+    # dict of cookie strings. saves us from having to POST ETI every time we want to login as a user.
+    self.info['cookie_strings'] = {}
+
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("action", choices=["start", "stop", "restart"], 
