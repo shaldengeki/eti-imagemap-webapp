@@ -45,7 +45,6 @@ class UsersController extends AppController {
         return True;
       }
     }
-    
     return parent::isAuthorized($user);
   }  
 
