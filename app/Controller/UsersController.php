@@ -78,7 +78,7 @@ class UsersController extends AppController {
     }
     $this->Paginator->settings = $this->paginate;
     $images = $this->Paginator->paginate('Image');
-
+    
     // only return images, not joined things.
     $this->set('images', array_map(function ($i) {
       return $i['Image'];
