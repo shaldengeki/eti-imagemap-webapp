@@ -51,6 +51,14 @@ class User extends AppModel {
     'PublicImages' => [
       'className' => 'Image',
       'conditions' => ['PublicImages.private' => False]
+    ],
+    'ImageLists' => [
+      'className' => 'ImageList',
+      'dependent' => True
+    ],
+    'PublicImageLists' => [
+      'className' => 'ImageList',
+      'conditions' => ['PublicImageLists.private' => False]
     ]
   ];
   public $hasOne = [

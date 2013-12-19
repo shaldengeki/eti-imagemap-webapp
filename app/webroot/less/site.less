@@ -175,8 +175,8 @@ h1, h2, h3, h4, h5, h6 {
   .clearfix;
 }
 
-/* image grid */
-ul.image-grid {
+/* image grid, image row */
+ul.image-grid, ul.image-row {
   .clearfix;
   margin: 0;
   padding: 1px;
@@ -186,7 +186,6 @@ ul.image-grid {
   min-width: 152px;
   margin: 0 auto;
   li {
-    float: left;
     max-width: @imageThumbMaxWidth;
     max-height: @imageThumbMaxHeight;
     position: relative;
@@ -216,6 +215,18 @@ ul.image-grid {
       display: inline !important;
       right: 0;
     }
+  }
+}
+ul.image-grid {
+  li {
+    float: left;
+  }
+}
+ul.image-row {
+  display: table-row;
+  li {
+    display: table-cell;
+    vertical-align: middle;
   }
 }
 

@@ -81,6 +81,11 @@ class Image extends AppModel {
       'counterCache' => True
     ]
   ];
+  public $hasAndBelongsToMany = [
+    'ImageLists' => [
+      'className' => 'ImageList'
+    ]
+  ];
 
   public function __construct($id = False, $table = Null, $ds = Null) {
     parent::__construct($id, $table, $ds);

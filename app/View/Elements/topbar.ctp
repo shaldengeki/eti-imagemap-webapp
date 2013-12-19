@@ -70,6 +70,36 @@
     ]
   ];
 
+  // lists menu.
+  $tabs['Lists'] = [
+    'link' => [
+      'controller' => 'image_lists',
+      'action' => 'index'
+    ],
+    'submenu' => [
+      'Listing' => [
+        'controller' => 'image_lists',
+        'action' => 'index'
+      ],
+      'Create' => [
+        'controller' => 'image_lists',
+        'action' => 'add'
+      ],
+      'Popular' => [
+        'controller' => 'image_lists',
+        'action' => 'popular'
+      ]
+    ]
+  ];
+
+  if (isset($authUser)) {
+    $tabs['Lists']['submenu']['Mine'] = [
+      'controller' => 'users',
+      'action' => 'lists',
+      $authUser['id']
+    ];
+  }
+
   // tags menu.
   $tabs['Tags'] = [
     'link' => [

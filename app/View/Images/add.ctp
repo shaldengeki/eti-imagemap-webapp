@@ -34,7 +34,7 @@
                                       ]); ?>
       </div>
       <div class='form-group'>
-        <label for='ImageType' class='col-lg-2 control-label'>Filename</label>
+        <label for='ImageFilename' class='col-lg-2 control-label'>Filename</label>
         <?php echo $this->Form->input('filename', [
                                       'class' => 'form-control',
                                       'placeholder' => 'do not include extension',
@@ -71,6 +71,7 @@
         <label for='ImagePrivate' class='col-lg-2 control-label'>Private</label>
         <?php echo $this->Form->input('private', [
                                       'class' => 'form-control',
+                                      'type' => 'checkbox',
                                       'div' => [
                                         'class' => 'float-left col-lg-1'
                                       ],
