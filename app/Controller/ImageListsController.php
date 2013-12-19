@@ -11,6 +11,23 @@ class ImageListsController extends AppController {
         'ImageList.updated' => 'desc'
       ],
       'conditions' => []
+    ],
+    'Image' => [
+      'limit' => 50,
+      'joins' => [
+        [
+          'table' => 'image_lists_images',
+          'alias' => 'ImageListsImages',
+          'type' => 'INNER',
+          'conditions' => [
+            'ImageListsImages.image_id = Image.id'
+          ]
+        ]
+      ],
+      'order' => [
+        'Image.created' => 'desc'
+      ],
+      'conditions' => []
     ]
   ];
 
@@ -86,7 +103,16 @@ class ImageListsController extends AppController {
     $this->ImageList->incrementHits($id);
     $imageList['ImageList']['hits'] += 1;
 
-    $this->set('images', $imageList['Images']);
+    $this->paginate['Image']['conditions'] = [
+      'ImageListsImages.image_list_id' => $imageList['ImageList']['id'],
+    ];
+
+    $this->Paginator->settings = $this->paginate;
+    $images = array_map(function($i) {
+      return $i['Image'];
+    }, $this->Paginator->paginate('Image'));
+    $this->set('images', $images);
+
 
     $this->set('title_for_layout', $imageList['ImageList']['name']);
     $this->set('imageList', $imageList);

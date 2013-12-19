@@ -8,11 +8,11 @@
 ?>
 <div id='image'>
   <?php echo $this->Html->link(
-                               $this->Html->image($image['Image']['eti_url'],
+                               $this->Html->image($this->Image->etiUrl($image),
                                                   [
                                                     'class' => 'scale',
                                                   ]),
-                               $image['Image']['eti_url'],
+                               $this->Image->etiUrl($image),
                                [
                                 'target' => '_blank',
                                 'escape' => False

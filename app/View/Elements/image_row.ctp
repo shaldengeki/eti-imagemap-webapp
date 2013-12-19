@@ -5,7 +5,7 @@
   <li>
     <?php echo $this->Html->link(
                                  $this->Html->image(
-                                                    $image['eti_thumb_url'],
+                                                    $this->Image->etiThumbUrl($image),
                                                     [
                                                       'alt' => 'sup'
                                                     ]

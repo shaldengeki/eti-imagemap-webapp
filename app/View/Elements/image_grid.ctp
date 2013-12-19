@@ -5,7 +5,7 @@
   <li>
     <?php echo $this->Html->link(
                                  $this->Html->image(
-                                                    $image['eti_thumb_url'],
+                                                    $this->Image->etiThumbUrl($image),
                                                     [
                                                       'alt' => 'sup'
                                                     ]
@@ -19,7 +19,7 @@
                                   'escape' => False
                                  ]
                                  ); ?>
-    <span class='copy-button glyphicon glyphicon-paperclip' data-clipboard-text='<?php echo h($image['eti_image_tag']); ?>'></span>
+    <span class='copy-button glyphicon glyphicon-paperclip' data-clipboard-text='<?php echo h($this->Image->etiImageTag($image)); ?>'></span>
   </li>
 <?php
   }

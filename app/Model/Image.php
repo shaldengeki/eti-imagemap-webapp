@@ -89,9 +89,9 @@ class Image extends AppModel {
 
   public function __construct($id = False, $table = Null, $ds = Null) {
     parent::__construct($id, $table, $ds);
-    $this->virtualFields['eti_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/n/", %s.hash, "/", %s.filename, ".", %s.type)', $this->alias, $this->alias, $this->alias, $this->alias);
-    $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/", %s.filename, ".jpg")', $this->alias, $this->alias, $this->alias);
-    $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/\', %s.filename, \'\.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias, $this->alias);
+    // $this->virtualFields['eti_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/n/", %s.hash, "/", %s.filename, ".", %s.type)', $this->alias, $this->alias, $this->alias, $this->alias);
+    // $this->virtualFields['eti_thumb_url'] = sprintf('CONCAT("http://i", %s.server, ".endoftheinter.net/i/t/", %s.hash, "/", %s.filename, ".jpg")', $this->alias, $this->alias, $this->alias);
+    // $this->virtualFields['eti_image_tag'] = sprintf('CONCAT(\'<img src="\', \'http://i\', %s.server, \'\.endoftheinter\.net/i/n/\', %s.hash, \'/\', %s.filename, \'\.\', %s.type, \'" />\')', $this->alias, $this->alias, $this->alias, $this->alias, $this->alias);
   }
 
   public function beforeSave($options=[]) {
@@ -258,5 +258,6 @@ class Image extends AppModel {
     $tagArray = $this->tagArray($this->field('tags', ['id' => $image]));
     return in_array($tag, $tagArray);
   }
+
 }
 ?>

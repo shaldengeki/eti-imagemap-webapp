@@ -54,7 +54,7 @@ class ImagesController extends AppController {
       $this->paginate['Image']['conditions'][] = "MATCH(tags) AGAINST('".$this->Tag->sqlQuery($tagSearch)."' IN BOOLEAN MODE)";
     }
 
-    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag', 'Image.tags'];
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.server', 'Image.hash', 'Image.filename', 'Image.type', 'Image.tags'];
     $this->Paginator->settings = $this->paginate;
 
     $pageResults = array_filter($this->Paginator->paginate('Image')

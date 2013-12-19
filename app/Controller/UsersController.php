@@ -241,7 +241,7 @@ class UsersController extends AppController {
     }
     $this->set('user', $user);
 
-    $this->paginate['Image']['fields'] = ['Image.id', 'Image.eti_thumb_url', 'Image.eti_image_tag', 'Image.tags'];
+    $this->paginate['Image']['fields'] = ['Image.id', 'Image.server', 'Image.hash', 'Image.filename', 'Image.type', 'Image.tags'];
     $this->Paginator->settings = $this->paginate;
     // if the signed-in user is neither the given user nor an admin, filter out all private images.
     if ($this->User->canViewPrivateImages($this->Auth->user('id'), $user['User']['id'])) {

@@ -18,8 +18,8 @@ if (isset($image)) {
                                                     'id' => 'eti-copy-field',
                                                     'class' => 'copy-field form-control',
                                                     'type' => 'text',
-                                                    'value' => $image['Image']['eti_image_tag'],
-                                                    'data-clipboard-target' => $image['Image']['eti_image_tag'],
+                                                    'value' => $this->Image->etiImageTag($image),
+                                                    'data-clipboard-target' => $this->Image->etiImageTag($image),
                                                     'readonly' => 'readonly',
                                                     'div' => False,
                                                     'label' => False
