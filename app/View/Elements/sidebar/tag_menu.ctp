@@ -6,11 +6,11 @@ if (isset($tag)) {
   <ul>
     <li><?php echo $this->Html->link('Edit', [
                                      'action' => 'edit',
-                                     $tag['Tag']['id']
+                                     $tag['id']
     ]); ?></li>
     <li><?php echo $this->Form->postLink('Delete', [
                                      'action' => 'delete',
-                                     $tag['Tag']['id']
+                                     $tag['id']
     ], [
       'confirm' => "Are you sure you want to delete this tag?"
     ]); ?></li>

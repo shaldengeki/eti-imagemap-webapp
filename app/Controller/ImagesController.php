@@ -96,7 +96,8 @@ class ImagesController extends AppController {
     }
 
     $this->set('title_for_layout', $image['Image']['tags']);
-    $this->set('image', $image);
+    $this->set('image', $image['Image']);
+    $this->set('user', $image['User']);
     $this->set('tagListing', $tagListing);
   }
 

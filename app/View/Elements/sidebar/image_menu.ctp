@@ -6,11 +6,11 @@ if (isset($image)) {
   <ul>
     <li><?php echo $this->Html->link('Edit', [
                                      'action' => 'edit',
-                                     $image['Image']['id']
+                                     $image['id']
     ]); ?></li>
     <li><?php echo $this->Form->postLink('Delete', [
                                      'action' => 'delete',
-                                     $image['Image']['id']
+                                     $image['id']
     ], [
       'confirm' => "Are you sure you want to delete this image?"
     ]); ?></li>

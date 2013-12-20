@@ -53,7 +53,7 @@ class TagsController extends AppController {
     if (!$tag) {
       throw new NotFoundException(__('Invalid tag'));
     }
-    $this->set('tag', $tag);
+    $this->set('tag', $tag['Tag']);
 
     // pull the images belonging to this tag.
     $tagSearch = $this->Tag->parseQuery($tag['Tag']['name']);

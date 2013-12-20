@@ -4,14 +4,14 @@ if (isset($image)) {
 <div class='image-info'>
   <h3>Information</h3>
   <ul>
-    <li>ID: <?php echo $image['Image']['id']; ?></li>
-    <li>Uploader: <?php echo $this->Html->link($image['User']['name'], [
+    <li>ID: <?php echo $image['id']; ?></li>
+    <li>Uploader: <?php echo $this->Html->link($user['name'], [
                                                 'controller' => 'users',
                                                 'action' => 'view',
-                                                $image['User']['id']
+                                                $user['id']
     ]); ?></li>
-    <li>Date: <?php echo $image['Image']['created']; ?></li>
-    <li>Hits: <?php echo $image['Image']['hits']; ?></li>
+    <li>Date: <?php echo $image['created']; ?></li>
+    <li>Hits: <?php echo $image['hits']; ?></li>
     <li>
       <span class='input-group input-group-sm eti-copy-fields'>
         <?php echo $this->Form->input('copy_url', [
